@@ -185,7 +185,7 @@ var getTertiaryEquation = () => {
     result += rho_dot.toString()+"\\\\";
 
 
-    result += ",&t=";
+    result += ",&\\quad t=";
     result += t_cumulative.toString();
 
     result += ",&q=";
