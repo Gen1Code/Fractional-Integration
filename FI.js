@@ -23,6 +23,7 @@ var lambda_man = BigNumber.ZERO;
 var lambda_exp = BigNumber.ZERO;
 
 var q = BigNumber.ZERO;
+var r = BigNumber.ZERO;
 
 var update_divisor = true;
 
@@ -119,36 +120,40 @@ var tick = (elapsedTime, multiplier) => {
 
     t_cumulative += vt * dt;
     q += vq1 * vq2 * dt;
+    r += vden * dt;
     
-    rho_dot = t_cumulative * norm_int(q) * vden * dt;
+    rho_dot = t_cumulative * norm_int(q) * r * dt;
 
     currency.value += bonus * rho_dot;
 
     theory.invalidateTertiaryEquation();
 }
 
-var getInternalState = () => `${t_cumulative} ${lambda_man} ${lambda_exp}`;
+var getInternalState = () => `${t_cumulative} ${lambda_man} ${lambda_exp} ${q} ${r}`;
 
 var setInternalState = (state) => {
     let values = state.split(" ");
     if (values.length > 0) t_cumulative = parseBigNumber(values[0]);
     if (values.length > 1) lambda_man = parseBigNumber(values[1]);
     if (values.length > 2) lambda_exp = parseBigNumber(values[2]);
+    if (values.length > 3) q = parseBigNumber(values[3]);
+    if (values.length > 4) r = parseBigNumber(values[4]);
 }
 
 var postPublish = () => {
     t_cumulative = BigNumber.ZERO;
     q = BigNumber.ZERO;
+    r = BigNumber.ZERO;
     update_divisor = true;
     k.level = 1;
 }
 
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 60;
+    theory.primaryEquationHeight = 100;
     theory.primaryEquationScale = 1.3;
     let result = "\\begin{matrix}";
-    result += "\\dot{\\rho}=\\frac{t\\int_{0}^{q}f(x)dx}";
-    result += "{\\int_{0}^{\\pi}f(x)dx - _{\\lambda}\\int_{0}^{\\pi}f(x)dx^{\\lambda}}";
+    result += "\\dot{\\rho}=tr\\int_{0}^{q}f(x)dx\\\\";
+    result += "\\dot{r}=\\frac{1}{\\int_{0}^{\\pi}f(x)dx - _{\\lambda}\\int_{0}^{\\pi}f(x)dx^{\\lambda}}";
     result += "\\end{matrix}\\\\";
     return result;
 }
@@ -173,6 +178,9 @@ var getTertiaryEquation = () => {
 
     result += ",&q=";
     result += q.toString();
+
+    result += ",&r=";
+    result += r.toString();
 
     result += ",&1/2^{k}=";
     if(getK(k.level)<8){
