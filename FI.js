@@ -149,22 +149,22 @@ var postPublish = () => {
 }
 
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 100;
+    theory.primaryEquationHeight = 76;
     theory.primaryEquationScale = 1.3;
     let result = "\\begin{matrix}";
     result += "\\dot{\\rho}=tr\\int_{0}^{q}f(x)dx\\\\\\\\";
-    result += "\\dot{r}=\\frac{1}{\\int_{0}^{\\pi}f(x)dx - _{\\lambda}\\int_{0}^{\\pi}f(x)dx^{\\lambda}}";
-    result += "\\end{matrix}\\\\";
+    result += "\\dot{r}=(\\int_{0}^{\\pi}f(x)dx - _{\\lambda}\\int_{0}^{\\pi}f(x)dx^{\\lambda})^{-1}";
+    result += "\\end{matrix}";
     return result;
 }
 
 var getSecondaryEquation = () => {
-    theory.secondaryEquationHeight = 135;
+    theory.secondaryEquationHeight = 100;
     theory.secondaryEquationScale = 1.2;
     let result = "";
     result += "&f(x) = 1 + x + \\frac{x^2}{2}+\\frac{x^3}{6}+\\frac{x^4}{24},";
     result += "\\quad\\lambda = \\sum_{n=1}^{K}\\frac{1}{2^{n}}\\\\\\\\";
-    result += "&\\dot{q}=q_1"
+    result += "&\\quad\\qquad\\qquad\\dot{q}=q_1"
     if (q1Exp.level > 0) result += `^{${1+q1Exp.level*0.015}}`;
     result += "q_2\\quad"+theory.latexSymbol + "=\\max\\rho^{0.1}";
     result += ""
@@ -173,25 +173,29 @@ var getSecondaryEquation = () => {
 
 var getTertiaryEquation = () => {
     let result = "";
-    result += "\\begin{matrix}t =";
-    result += t_cumulative.toString();
-
-    result += ",&q=";
-    result += q.toString();
-
-    result += ",&r=";
-    result += r.toString();
-
-    result += ",&1/2^{k}=";
+    result += "\\begin{matrix}";
+    result += "&\\qquad\\qquad\\quad1/2^{k}=";
     if(getK(k.level)<8){
         result += (1/BigNumber.TWO.pow(getK(k.level))).toString(4);
     }else{
         result += lambda_man+"e"+lambda_exp;
     }
     
-    
-    result += ",&\\dot{\\rho} ="
-    result += rho_dot.toString();
+    result += ",&\\qquad\\qquad\\quad\\dot{\\rho} ="
+    result += rho_dot.toString()+"\\\\";
+
+
+    result += ",&t=";
+    result += t_cumulative.toString();
+
+    result += ",&q=";
+    result += q.toString();
+
+    result += ",&r=";
+    result += r.toString()
+
+
+
     result += "\\end{matrix}";
 
     return result;
