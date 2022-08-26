@@ -200,7 +200,7 @@ var getTertiaryEquation = () => {
     return result;
 }
 
-//Approximates value for 1/(normal integral - fractional integral) https://www.desmos.com/calculator/qugkxpt8nb
+//Approximates value for 1/(normal integral - fractional integral) https://www.desmos.com/calculator/ua2v7q9mza
 var approx = (k_v,base) =>{
     return BigNumber.TEN.pow(-norm_int(BigNumber.PI).log10()-BigNumber.ONE/(BigNumber.E+BigNumber.from(1.5))+k_v*base.log10());
 }
