@@ -21,6 +21,8 @@ var t_cumulative = BigNumber.ZERO;
 //exp = floor(log(1) - k*log(2))
 var lambda_man = BigNumber.ZERO;
 var lambda_exp = BigNumber.ZERO;
+//used for approx calculation
+var lambda_base = BigNumber.TWO;
 
 var q = BigNumber.ZERO;
 var r = BigNumber.ZERO;
@@ -107,10 +109,10 @@ var tick = (elapsedTime, multiplier) => {
     let vq2 = getQ2(q2.level);
     let vt = getT(t.level);
     let vk = getK(k.level);
-    var vden = approx(vk);
+    var vden = approx(vk,lambda_base);
 
     if(update_divisor){
-        var temp = -vk*BigNumber.TWO.log10();
+        var temp = -vk*lambda_base.log10();
 
         lambda_exp = Math.floor(temp);
         lambda_man = BigNumber.TEN.pow(temp-lambda_exp);
@@ -174,9 +176,9 @@ var getSecondaryEquation = () => {
 var getTertiaryEquation = () => {
     let result = "";
     result += "\\begin{matrix}";
-    result += "&\\qquad\\qquad\\quad1/2^{k}=";
+    result += "&\\qquad\\qquad\\quad1/"+lambda_base.toNumber()+"^{k}=";
     if(getK(k.level)<8){
-        result += (1/BigNumber.TWO.pow(getK(k.level))).toString(4);
+        result += (1/lambda_base.pow(getK(k.level))).toString(4);
     }else{
         result += lambda_man+"e"+lambda_exp;
     }
@@ -193,20 +195,18 @@ var getTertiaryEquation = () => {
 
     result += ",&r=";
     result += r.toString()
-
-
-
     result += "\\end{matrix}";
 
     return result;
 }
 
-
-var approx = (k_v) =>{
-    return BigNumber.TEN.pow(BigNumber.from(-1.5)+k_v*BigNumber.TWO.log10());
+//Approximates value for 1/(normal integral - fractional integral) https://www.desmos.com/calculator/qugkxpt8nb
+var approx = (k_v,base) =>{
+    return BigNumber.TEN.pow(-norm_int(BigNumber.PI).log10()-BigNumber.ONE/(BigNumber.E+BigNumber.from(1.5))+k_v*base.log10());
 }
 
 //integrates f(x) and returns value with 0 -> limit, as limits
+//TODO NEW EQ
 var norm_int = (limit) => {
     return (limit.pow(5)/120+limit.pow(4)/24+limit.pow(3)/6+limit.pow(2)/2+limit);
 }
