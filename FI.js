@@ -6,7 +6,9 @@ import { Utils } from "./api/Utils";
 
 var id = "fractional_integration";
 var name = "Fractional Integration";
-var description = "not null";
+var description = "The functions between a function and it's derivative have many ways of being shown, this is one of them."+
+                    "Fractional integration is a way to calculate what is between a function and its integral and is a smooth transition."+
+                    "As such, as a fractional integral approaches 1, it should become the integral.";
 var authors = "Snaeky (SnaekySnacks#1161) - Idea\nGen (Gen#3006) - Coding\nXLII (XLII#0042) - Balancing";
 var version = 1;
 var releaseOrder = "6";
@@ -49,7 +51,7 @@ var init = () => {
     {
         let getDesc = (level) => "\\dot{t}=" + getT(level).toString(1);
         let getInfo = (level) => "\\dot{t}=" + getT(level).toString(1);
-        t = theory.createUpgrade(0, currency, new ExponentialCost(1e25, Math.log2(1e15)));
+        t = theory.createUpgrade(0, currency, new ExponentialCost(1e25, Math.log2(1e50)));
         t.getDescription = (amount) => Utils.getMath(getDesc(t.level));
         t.getInfo = (amount) => Utils.getMathTo(getInfo(t.level), getInfo(t.level + amount));
         t.maxLevel=4;
@@ -86,8 +88,8 @@ var init = () => {
 
     //M
     {
-        let getDesc = (level) => "M= 1.5^{" + level + "}";
-        let getInfo = (level) => "M=" + getM(level).toString(0);
+        let getDesc = (level) => "m= 1.5^{" + level + "}";
+        let getInfo = (level) => "m=" + getM(level).toString(0);
         m = theory.createUpgrade(4, currency, new ExponentialCost(1e15, Math.log2(4.44)));
         m.getDescription = (amount) => Utils.getMath(getDesc(m.level));
         m.getInfo = (amount) => Utils.getMathTo(getInfo(m.level), getInfo(m.level + amount));
@@ -95,15 +97,14 @@ var init = () => {
 
     //N
     {
-        let getDesc = (level) => "N= " + getN(level).toString(0);
-        let getInfo = (level) => "N=" + getN(level).toString(0);
+        let getDesc = (level) => "n= " + getN(level).toString(0);
+        let getInfo = (level) => "n=" + getN(level).toString(0);
         n = theory.createUpgrade(5, currency, new ExponentialCost(1e10, Math.log2(1.531)));
         n.getDescription = (amount) => Utils.getMath(getDesc(n.level));
         n.getInfo = (amount) => Utils.getMathTo(getInfo(n.level), getInfo(n.level + amount));
         n.level = 1;
     }
 
-        
 
     /////////////////////
     // Permanent Upgrades
@@ -119,7 +120,7 @@ var init = () => {
         q1Exp = theory.createMilestoneUpgrade(0, 3);
         q1Exp.description = Localization.getUpgradeIncCustomExpDesc("q_1", "0.15");
         q1Exp.info = Localization.getUpgradeIncCustomExpInfo("q_1", "0.15");
-        q1Exp.boughtOrRefunded = (_) => {theory.invalidatePrimaryEquation();updateAvailability();};
+        q1Exp.boughtOrRefunded = (_) => {theory.invalidateSecondaryEquation();updateAvailability();};
         q1Exp.canBeRefunded = (_) => fxUpg.level == 0;
     }
 
@@ -141,12 +142,21 @@ var init = () => {
 
     {
         fxUpg = theory.createMilestoneUpgrade(3, 2);
-        fxUpg.description = Localization.getUpgradeIncCustomDesc("", "");
-        fxUpg.info = Localization.getUpgradeIncCustomInfo("", "");
+        fxUpg.getDescription = (_) => {
+            if (fxUpg.level == 0){
+                return "$\\text{Approximate }e^{x}-1 \\text{ to 5 terms}$";
+            }
+            return "$\\text{Approximate }\\log_{10}(1+x) \\text{ to 5 terms}$";
+        };
+        fxUpg.getInfo = (_) => {
+            if (fxUpg.level == 0){
+                return "$\\text{Change f(x) to } x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!}$";
+            }
+            return "$\\text{Change f(x) to } (x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5})/\\ln(10)$";
+        };
         fxUpg.bought = (_) => {
             f_x = fxUpg.level;            
             if(f_x==1){
-                q2 = theory.createUpgrade(2, currency, new ExponentialCost(1e100, Math.log2(5e3)))
                 //q2SC = 1e5;
                 //q2EC = Math.log2(5e5);
                 q2.level = 0;
@@ -165,8 +175,18 @@ var init = () => {
 
     {
         baseUpg = theory.createMilestoneUpgrade(4, 2);
-        baseUpg.description = Localization.getUpgradeIncCustomDesc("", "");
-        baseUpg.info = Localization.getUpgradeIncCustomInfo("", "");
+        baseUpg.getDescription = (_) => {
+            if(baseUpg.level==0){
+                return "$\\text{Improve } \\lambda \\text{ Fraction to } 2/3^{i}$";
+            }
+            return "$\\text{Improve } \\lambda \\text{ Fraction to } 3/4^{i}$"
+        }
+        baseUpg.getInfo = (_) => {
+            if(baseUpg.level==0){
+                return "$\\text{Improve } \\lambda \\text{ Fraction to } 2/3^{i}$";
+            }
+            return "$\\text{Improve } \\lambda \\text{ Fraction to } 3/4^{i}$"
+        } ;
         baseUpg.boughtOrRefunded = (_) => {
             lambda_base = BigNumber.from(2 + baseUpg.level);
             k.level = 0;
@@ -276,7 +296,7 @@ var postPublish = () => {
 }
 
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 76;
+    theory.primaryEquationHeight = 85;
     theory.primaryEquationScale = 1.3;
     let result = "\\begin{matrix}";
     result += "\\dot{\\rho}=tr";
@@ -294,7 +314,7 @@ var getSecondaryEquation = () => {
     let result = "";
     result += "&f(x) = ";
     result += fx_latex();
-    result += ",\\quad\\lambda = \\sum_{n=1}^{K}\\frac{"+(lambda_base-1).toString(0)+"}{"+lambda_base.toString(0)+"^{n}}\\\\\\\\";
+    result += ",\\quad\\lambda = \\sum_{i=1}^{K}\\frac{"+(lambda_base-1).toString(0)+"}{"+lambda_base.toString(0)+"^{i}}\\\\\\\\";
     result += "&\\quad\\qquad\\qquad\\dot{q}=q_1"
     if (q1Exp.level > 0) result += `^{${1+q1Exp.level*0.15}}`;
     result += "q_2\\quad"+theory.latexSymbol + "=\\max\\rho^{0.1}";
@@ -306,7 +326,7 @@ var getTertiaryEquation = () => {
     let result = "";
     result += "\\begin{matrix}";
     result += "&\\qquad\\qquad\\quad1/"+lambda_base.toString(0)+"^{k}=";
-    if(getK(k.level) < 8 || 1/lambda_base.pow(getK(k.level))>0.001){
+    if(getK(k.level) < 8 && 1/lambda_base.pow(getK(k.level))>0.001){
         result += (1/lambda_base.pow(getK(k.level))).toString(4);
     }else{
         result += lambda_man+"e"+lambda_exp;
@@ -374,7 +394,7 @@ var factorial = (num) => {
 }
 
 var getPublicationMultiplier = (tau) => tau.isZero ? BigNumber.ONE : tau.pow(0.78);
-var getPublicationMultiplierFormula = (symbol) => "{" + symbol + "}";
+var getPublicationMultiplierFormula = (symbol) => symbol + "^{0.78}";
 var getTau = () => currency.value.pow(BigNumber.from(0.1));
 var getCurrencyFromTau = (tau) => [tau.max(BigNumber.ONE).pow(10), currency.symbol];
 var get2DGraphValue = () => currency.value.sign * (BigNumber.ONE + currency.value.abs()).log10().toNumber();
