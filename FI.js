@@ -70,7 +70,11 @@ var init = () => {
     {
         let getDesc = (level) => "q_2=2^{" + level+"}";
         let getInfo = (level) => "q_2=" + getQ2(level).toString(0);
-        q2 = theory.createUpgrade(2, currency, new ExponentialCost(1e5, Math.log2(5e3)));//TEST lambda functions & REcreat upgrade
+        q2 = theory.createUpgrade(2, currency, new CustomCost(
+            level => fxUpg.level == 0 ? q2Cost1.getCost(level) : q2Cost2.getCost(level),
+            (level,extra) => fxUpg.level == 0 ? q2Cost1.getSum(level,level+extra) : q2Cost2.getSum(level,level+extra),
+            (level,vrho) => fxUpg.level == 0 ? q2Cost1.getMax(level,vrho) : q2Cost2.getMax(level,vrho)
+        ));
         q2.getDescription = (amount) => Utils.getMath(getDesc(q2.level));
         q2.getInfo = (amount) => Utils.getMathTo(getInfo(q2.level), getInfo(q2.level + amount));
     }
@@ -79,7 +83,11 @@ var init = () => {
     {
         let getDesc = (level) => "K= " + getK(level).toString(0);
         let getInfo = (level) => "K=" + getK(level).toString(0);
-        k = theory.createUpgrade(3, currency, new ExponentialCost(1e2, Math.log2(10)));//TEST lambda functions & REcreat upgrade
+        k = theory.createUpgrade(3, currency, new CustomCost(
+            level => KCosts[baseUpg.level].getCost(level),
+            (level,extra) => KCosts[baseUpg.level].getSum(level,level+extra),
+            (level,vrho) => KCosts[baseUpg.level].getMax(level,vrho)
+        ));
         k.getDescription = (amount) => Utils.getMath(getDesc(k.level));
         k.getInfo = (amount) => Utils.getMathTo(getInfo(k.level), getInfo(k.level + amount));
         k.bought = (_) => update_divisor = true;
@@ -114,7 +122,7 @@ var init = () => {
 
     /////////////////////
     // Checkpoint Upgrades
-    theory.setMilestoneCost(new CustomCost(total => BigNumber.from(getCustomCost(total))));
+    theory.setMilestoneCost(new CustomCost(total => BigNumber.from(getMilCustomCost(total))));
 
     {
         q1Exp = theory.createMilestoneUpgrade(0, 3);
@@ -154,17 +162,13 @@ var init = () => {
             }
             return "$\\text{Change f(x) to } (x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5})/\\ln(10)$";
         };
-        fxUpg.bought = (_) => {
-            f_x = fxUpg.level;            
-            if(f_x==1){
-                //q2SC = 1e5;
-                //q2EC = Math.log2(5e5);
+        fxUpg.boughtOrRefunded = (_) => {
+            //Bought/Refunded 1st milestone
+            if((f_x == 0 && fxUpg.level == 1) || (f_x == 1 && fxUpg.level == 0)){
                 q2.level = 0;
                 q = 0;
             }
-        }
-        fxUpg.boughtOrRefunded = (_) => {
-            f_x = fxUpg.level;            
+            f_x = fxUpg.level;           
             theory.invalidateSecondaryEquation();
             updateAvailability();
         }
@@ -189,17 +193,7 @@ var init = () => {
         } ;
         baseUpg.boughtOrRefunded = (_) => {
             lambda_base = BigNumber.from(2 + baseUpg.level);
-            k.level = 0;
-            if(lambda_base == 2){
-                //kSC = 1e2;
-                //kEC = 1e1;
-            }else if(lambda_base == 3){
-                //kSC = 1e2;
-                //kEC = Math.log2(36);
-            }else if(lambda_base == 4){
-                //kSC = 1e38;
-                //kEC = Math.log2(76);
-            }
+            k.level = 1;
             update_divisor = true;
             theory.invalidateSecondaryEquation();
             theory.invalidateTertiaryEquation();
@@ -207,7 +201,6 @@ var init = () => {
         }
         //More Conditions to add to force alternating
         baseUpg.canBeRefunded = (_) => fxUpg.level == baseUpg.level || baseUpg.level == 2;
-
     }
 
     updateAvailability();
@@ -218,7 +211,6 @@ var updateAvailability = () => {
     baseUpg.isAvailable = fxUpg.level > 0; 
     m.isAvailable = MTerm.level > 0;
     n.isAvailable = NTerm.level > 0;
-
 }
 
 var tick = (elapsedTime, multiplier) => {
@@ -262,7 +254,18 @@ var setInternalState = (state) => {
     if (values.length > 4) r = parseBigNumber(values[4]);
 }
 
-var getCustomCost = (level) => {
+//Q2 Cost
+var q2Cost1 = new ExponentialCost(1e5, Math.log2(5e3));
+var q2Cost2 = new ExponentialCost(1e5, Math.log2(5e5));
+
+//K Cost
+var KCost1 = new ExponentialCost(1e2,Math.log2(10));
+var KCost2 = new ExponentialCost(1e2,Math.log2(36));
+var KCost3 = new ExponentialCost(1e38,Math.log2(76));
+var KCosts = [KCost1,KCost2,KCost3];
+
+//Milestone Cost
+var getMilCustomCost = (level) => {
     //20,70,210,300,450,530,650,850,950 
     switch(level){
         case 0:
@@ -363,7 +366,7 @@ var norm_int = (limit) => {
         case 1:
             return limit.pow(6)/720 + limit.pow(5)/120 + limit.pow(4)/24 + limit.pow(3)/6 + limit.pow(2)/2;
         case 2:
-            return ((limit.pow(6)/30 - limit.pow(5)/20 + limit.pow(4)/12 - limit.pow(3)/6 + limit.pow(2)/2)/BigNumber.TEN.log().abs());
+            return ((limit.pow(6)/30 - limit.pow(5)/20 + limit.pow(4)/12 - limit.pow(3)/6 + limit.pow(2)/2)/BigNumber.TEN.log()).abs();
     }
 }
 
@@ -377,20 +380,6 @@ var fx_latex = () => {
         case 2:
             return "\\frac{x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5} }{\\ln(10)}";
     }
-}
-
-//for small num normal factorial
-//for big num use of Stirlings approximation
-var factorial = (num) => {
-    if (num.isZero) return BigNumber.ONE;
-    if(num < BigNumber.HUNDRED){
-        let temp = BigNumber.ONE;
-        for(let i = BigNumber.ONE; i<=num; i+=BigNumber.ONE){
-            temp *= i;
-        }
-        return temp;
-    }
-    return (BigNumber.TWO * BigNumber.PI * num).sqrt() * (num/BigNumber.E).pow(num);
 }
 
 var getPublicationMultiplier = (tau) => tau.isZero ? BigNumber.ONE : tau.pow(0.78);
