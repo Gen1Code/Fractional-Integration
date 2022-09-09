@@ -29,8 +29,9 @@ var lambda_base = BigNumber.TWO;
 
 //ID - f(x)
 //0 - cos(x)
-//1 - e^x - 1
-//2 - log10(1+x)
+//1 - sin(x)
+//2 - log10(1+x)    
+//3 - e^x -1 
 var f_x = 0;
 
 var q = BigNumber.ZERO;
@@ -71,9 +72,9 @@ var init = () => {
         let getDesc = (level) => "q_2=2^{" + level+"}";
         let getInfo = (level) => "q_2=" + getQ2(level).toString(0);
         q2 = theory.createUpgrade(2, currency, new CustomCost(
-            level => fxUpg.level == 0 ? q2Cost1.getCost(level) : q2Cost2.getCost(level),
-            (level,extra) => fxUpg.level == 0 ? q2Cost1.getSum(level,level+extra) : q2Cost2.getSum(level,level+extra),
-            (level,vrho) => fxUpg.level == 0 ? q2Cost1.getMax(level,vrho) : q2Cost2.getMax(level,vrho)
+            level => q2Costs[Math.min(2,fxUpg.level)].getCost(level) ,
+            (level,extra) => q2Costs[Math.min(2,fxUpg.level)].getSum(level,level+extra),
+            (level,vrho) => q2Costs[Math.min(2,fxUpg.level)].getMax(level,vrho)
         ));
         q2.getDescription = (amount) => Utils.getMath(getDesc(q2.level));
         q2.getInfo = (amount) => Utils.getMathTo(getInfo(q2.level), getInfo(q2.level + amount));
@@ -98,7 +99,7 @@ var init = () => {
     {
         let getDesc = (level) => "m= 1.5^{" + level + "}";
         let getInfo = (level) => "m=" + getM(level).toString(0);
-        m = theory.createUpgrade(4, currency, new ExponentialCost(1e15, Math.log2(4.44)));
+        m = theory.createUpgrade(4, currency, new ExponentialCost(1e3, Math.log2(4.44)));
         m.getDescription = (amount) => Utils.getMath(getDesc(m.level));
         m.getInfo = (amount) => Utils.getMathTo(getInfo(m.level), getInfo(m.level + amount));
     }
@@ -149,32 +150,36 @@ var init = () => {
     }
 
     {
-        fxUpg = theory.createMilestoneUpgrade(3, 2);
+        fxUpg = theory.createMilestoneUpgrade(3, 3);
         fxUpg.getDescription = (_) => {
             if (fxUpg.level == 0){
-                return "$\\text{Approximate }e^{x}-1 \\text{ to 5 terms}$";
+                return "$\\text{Approximate }\\sin(x) \\text{ to 5 terms}$";
+            }else if (fxUpg.level == 1){
+                return "$\\text{Approximate }\\log_{10}(1+x) \\text{ to 5 terms}$";
             }
-            return "$\\text{Approximate }\\log_{10}(1+x) \\text{ to 5 terms}$";
+            return "$\\text{Approximate }e^{x}-1 \\text{ to 5 terms \\& {} Remove / } \\pi \\text{ in Integral limit} $";
         };
         fxUpg.getInfo = (_) => {
             if (fxUpg.level == 0){
-                return "$\\text{Change f(x) to } x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!}$";
+                return "$\\text{Change f(x) to } x-\\frac{x^3}{3!}+\\frac{x^5}{5!}$";
+            }else if (fxUpg.level == 1){
+                return "$\\text{Change f(x) to } (x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5})/\\ln(10)$";                
             }
-            return "$\\text{Change f(x) to } (x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5})/\\ln(10)$";
+            return "$\\text{Change f(x) to } x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!} \\text{ \\& {} q/} \\pi \\to q$";
+
         };
         fxUpg.boughtOrRefunded = (_) => {
-            //Bought/Refunded 1st milestone
-            if((f_x == 0 && fxUpg.level == 1) || (f_x == 1 && fxUpg.level == 0)){
+            //Bought/Refunded 1st/2nd milestone
+            if(!(f_x == 3 || fxUpg.level == 3)){
                 q2.level = 0;
                 q = 0;
             }
             f_x = fxUpg.level;           
+            theory.invalidatePrimaryEquation();
             theory.invalidateSecondaryEquation();
             updateAvailability();
         }
-        //More Conditions to add to force alternating   
-        fxUpg.canBeRefunded = (_) => (fxUpg.level == 1 && baseUpg.level == 0) || (fxUpg.level == 2 && baseUpg.level <= 1);
-        
+        fxUpg.canBeRefunded = (_) => fxUpg.level > baseUpg.level;
     }
 
     {
@@ -199,8 +204,7 @@ var init = () => {
             theory.invalidateTertiaryEquation();
             updateAvailability();
         }
-        //More Conditions to add to force alternating
-        baseUpg.canBeRefunded = (_) => fxUpg.level == baseUpg.level || baseUpg.level == 2;
+        baseUpg.canBeRefunded = (_) => fxUpg.level <= baseUpg.level;
     }
 
     updateAvailability();
@@ -208,7 +212,7 @@ var init = () => {
 
 var updateAvailability = () => {
     fxUpg.isAvailable = q1Exp.level == 3 && MTerm.level == 1 && NTerm.level == 1;
-    baseUpg.isAvailable = fxUpg.level > 0; 
+    baseUpg.isAvailable = fxUpg.level > 0;
     m.isAvailable = MTerm.level > 0;
     n.isAvailable = NTerm.level > 0;
 }
@@ -237,7 +241,7 @@ var tick = (elapsedTime, multiplier) => {
     q += vq1 * vq2 * dt;
     if (q1.level > 0) r += vapp * dt;
     
-    rho_dot = vm * vn * t_cumulative * norm_int(q).pow(1/3) * r;
+    rho_dot = vm * vn * t_cumulative * norm_int(q/(f_x < 3 ? BigNumber.PI : 1)).pow(1/3) * r;
     currency.value += bonus * rho_dot * dt;
 
     theory.invalidateTertiaryEquation();
@@ -254,19 +258,22 @@ var setInternalState = (state) => {
     if (values.length > 4) r = parseBigNumber(values[4]);
 }
 
+
 //Q2 Cost
-var q2Cost1 = new ExponentialCost(1e5, Math.log2(5e3));
-var q2Cost2 = new ExponentialCost(1e5, Math.log2(5e5));
+var q2Cost1 = new ExponentialCost(1e7, Math.log2(5e3)); //fx == 0 
+var q2Cost2 = new ExponentialCost(1e7, Math.log2(3e5)); //fx == 1 
+var q2Cost3 = new ExponentialCost(1, Math.log2(3e5));   //fx >= 2
+var q2Costs = [q2Cost1,q2Cost2,q2Cost3];
 
 //K Cost
-var KCost1 = new ExponentialCost(1e2,Math.log2(10));
-var KCost2 = new ExponentialCost(1e2,Math.log2(36));
-var KCost3 = new ExponentialCost(1e38,Math.log2(76));
+var KCost1 = new ExponentialCost(1e2,Math.log2(10));                     //base == 2
+var KCost2 = new ExponentialCost(1e2,Math.log2(38));                     // base == 3
+var KCost3 = new ExponentialCost(BigNumber.TEN.pow(47.5),Math.log2(78)); //base == 4
 var KCosts = [KCost1,KCost2,KCost3];
 
 //Milestone Cost
 var getMilCustomCost = (level) => {
-    //20,70,210,300,450,530,650,850,950 
+    //20,70,210,300,425,530,650,800,950,1100
     switch(level){
         case 0:
             return 2;
@@ -277,15 +284,17 @@ var getMilCustomCost = (level) => {
         case 3:
             return 30;
         case 4:
-            return 45;
+            return 42.5;
         case 5:
             return 53;
         case 6:
             return 65;
         case 7:
-            return 85;
+            return 80;
+        case 8:
+            return 95;
     }
-    return 95;
+    return 110;
 };
 
 
@@ -305,7 +314,13 @@ var getPrimaryEquation = () => {
     result += "\\dot{\\rho}=tr";
     if(MTerm.level > 0) result +="m";
     if(NTerm.level > 0) result +="n";
-    result += "\\sqrt[3]{\\int_{0}^{q}f(x)dx}\\\\\\\\";
+    result += "\\sqrt[3]{\\int_{0}^{";
+    if(f_x<3){
+        result += "q/\\pi"
+    }else{
+        result += "q";
+    }
+    result += "}f(x)dx}\\\\\\\\";
     result += "\\dot{r}=(\\int_{0}^{\\pi}f(x)dx - _{\\lambda}\\int_{0}^{\\pi}f(x)dx^{\\lambda})^{-1}";
     result += "\\end{matrix}";
     return result;
@@ -364,9 +379,11 @@ var norm_int = (limit) => {
         case 0:
             return (limit.pow(5)/120 - limit.pow(3)/6 + limit).abs();
         case 1:
-            return limit.pow(6)/720 + limit.pow(5)/120 + limit.pow(4)/24 + limit.pow(3)/6 + limit.pow(2)/2;
+            return (limit.pow(6)/720 - limit.pow(4)/24 + limit.pow(2)/2).abs();
         case 2:
             return ((limit.pow(6)/30 - limit.pow(5)/20 + limit.pow(4)/12 - limit.pow(3)/6 + limit.pow(2)/2)/BigNumber.TEN.log()).abs();
+        case 3:
+            return limit.pow(6)/720 + limit.pow(5)/120 + limit.pow(4)/24 + limit.pow(3)/6 + limit.pow(2)/2;
     }
 }
 
@@ -376,9 +393,11 @@ var fx_latex = () => {
         case 0:
             return "1-\\frac{x^2}{2!}+\\frac{x^4}{4!}";
         case 1:
-            return "x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!}";
+            return "x-\\frac{x^3}{3!}+\\frac{x^5}{5!}";
         case 2:
-            return "\\frac{x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5} }{\\ln(10)}";
+            return "\\frac{x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5}}{\\ln(10)}";
+        case 3:
+            return "x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!}";
     }
 }
 
