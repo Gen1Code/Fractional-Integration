@@ -121,6 +121,23 @@ var init = () => {
     theory.createBuyAllUpgrade(1, currency, 1e15);
     theory.createAutoBuyerUpgrade(2, currency, 1e25);
 
+    {
+        perm1 = theory.createPermanentUpgrade(3, currency, new ExponentialCost(1e300,Math.log2(1e20)));
+        perm1.getDescription = (amount) => "$\\text{Unlock f(x) Milestone lv }$"+(perm1.level+1);
+        perm1.getInfo = (amount) => "$\\text{Unlocks the f(x) Milestone lv }$"+(perm1.level+1);
+        perm1.boughtOrRefunded = (_) => updateAvailability();
+        perm1.maxLevel = 3;
+    }
+
+    {
+        perm2 = theory.createPermanentUpgrade(4, currency, new ExponentialCost(1e300,Math.log2(1e50)));
+        perm2.getDescription = (amount) => "$\\text{Unlock }\\lambda \\text{ Milestone lv }$"+(perm2.level+1);
+        perm2.getInfo = (amount) => "$\\text{Unlocks the }\\lambda \\text{ Milestone lv }$"+(perm2.level+1);
+        perm2.boughtOrRefunded = (_) => updateAvailability();
+        perm2.maxLevel = 2;
+    }
+
+
     /////////////////////
     // Checkpoint Upgrades
     theory.setMilestoneCost(new CustomCost(total => BigNumber.from(getMilCustomCost(total))));
@@ -130,7 +147,6 @@ var init = () => {
         q1Exp.description = Localization.getUpgradeIncCustomExpDesc("q_1", "0.15");
         q1Exp.info = Localization.getUpgradeIncCustomExpInfo("q_1", "0.15");
         q1Exp.boughtOrRefunded = (_) => {theory.invalidateSecondaryEquation();updateAvailability();};
-        q1Exp.canBeRefunded = (_) => fxUpg.level == 0;
     }
 
     {
@@ -138,7 +154,6 @@ var init = () => {
         MTerm.description = Localization.getUpgradeAddTermDesc("m");
         MTerm.info = Localization.getUpgradeAddTermInfo("m");
         MTerm.boughtOrRefunded = (_) => {theory.invalidatePrimaryEquation(); updateAvailability(); };
-        MTerm.canBeRefunded = (_) => fxUpg.level == 0;
     }
 
     {
@@ -146,7 +161,6 @@ var init = () => {
         NTerm.description = Localization.getUpgradeAddTermDesc("n");
         NTerm.info = Localization.getUpgradeAddTermInfo("n");
         NTerm.boughtOrRefunded = (_) => {theory.invalidatePrimaryEquation(); updateAvailability(); };
-        NTerm.canBeRefunded = (_) => fxUpg.level == 0;
     }
 
     {
@@ -157,7 +171,7 @@ var init = () => {
             }else if (fxUpg.level == 1){
                 return "$\\text{Approximate }\\log_{10}(1+x) \\text{ to 5 terms}$";
             }
-            return "$\\text{Approximate }e^{x}-1 \\text{ to 5 terms \\& {} Remove / } \\pi \\text{ in Integral limit} $";
+            return "$\\text{Approximate }e^{x} \\text{ to 5 terms \\& {} Remove / } \\pi \\text{ in Integral limit} $";
         };
         fxUpg.getInfo = (_) => {
             if (fxUpg.level == 0){
@@ -165,7 +179,7 @@ var init = () => {
             }else if (fxUpg.level == 1){
                 return "$\\text{Change f(x) to } (x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5})/\\ln(10)$";                
             }
-            return "$\\text{Change f(x) to } x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!} \\text{ \\& {} q/} \\pi \\to q$";
+            return "$\\text{Change f(x) to } 1+x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!} \\text{ \\& {} q/} \\pi \\to q$";
 
         };
         fxUpg.boughtOrRefunded = (_) => {
@@ -179,19 +193,19 @@ var init = () => {
             theory.invalidateSecondaryEquation();
             updateAvailability();
         }
-        fxUpg.canBeRefunded = (_) => fxUpg.level > baseUpg.level;
+        fxUpg.canBeBought = (_) => fxUpg.level < perm1.level;
     }
 
     {
         baseUpg = theory.createMilestoneUpgrade(4, 2);
         baseUpg.getDescription = (_) => {
-            if(baseUpg.level==0){
+            if(baseUpg.level == 0){
                 return "$\\text{Improve } \\lambda \\text{ Fraction to } 2/3^{i}$";
             }
             return "$\\text{Improve } \\lambda \\text{ Fraction to } 3/4^{i}$"
         }
         baseUpg.getInfo = (_) => {
-            if(baseUpg.level==0){
+            if(baseUpg.level == 0){
                 return "$\\text{Improve } \\lambda \\text{ Fraction to } 2/3^{i}$";
             }
             return "$\\text{Improve } \\lambda \\text{ Fraction to } 3/4^{i}$"
@@ -204,15 +218,16 @@ var init = () => {
             theory.invalidateTertiaryEquation();
             updateAvailability();
         }
-        baseUpg.canBeRefunded = (_) => fxUpg.level <= baseUpg.level;
+        baseUpg.canBeBought = (_) => baseUpg.level < perm2.level;
     }
 
     updateAvailability();
 }
 
 var updateAvailability = () => {
-    fxUpg.isAvailable = q1Exp.level == 3 && MTerm.level == 1 && NTerm.level == 1;
-    baseUpg.isAvailable = fxUpg.level > 0;
+    fxUpg.isAvailable = perm1.level > 0;
+    baseUpg.isAvailable = perm2.level > 0;
+
     m.isAvailable = MTerm.level > 0;
     n.isAvailable = NTerm.level > 0;
 }
@@ -383,7 +398,7 @@ var norm_int = (limit) => {
         case 2:
             return ((limit.pow(6)/30 - limit.pow(5)/20 + limit.pow(4)/12 - limit.pow(3)/6 + limit.pow(2)/2)/BigNumber.TEN.log()).abs();
         case 3:
-            return limit.pow(6)/720 + limit.pow(5)/120 + limit.pow(4)/24 + limit.pow(3)/6 + limit.pow(2)/2;
+            return limit.pow(6)/720 + limit.pow(5)/120 + limit.pow(4)/24 + limit.pow(3)/6 + limit.pow(2)/2 + limit;
     }
 }
 
@@ -397,7 +412,7 @@ var fx_latex = () => {
         case 2:
             return "\\frac{x-\\frac{x^2}{2}+\\frac{x^3}{3}-\\frac{x^4}{4}+\\frac{x^5}{5}}{\\ln(10)}";
         case 3:
-            return "x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!}";
+            return "1+x+\\frac{x^2}{2!}+\\frac{x^3}{3!}+\\frac{x^4}{4!}+\\frac{x^5}{5!}";
     }
 }
 
