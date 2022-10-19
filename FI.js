@@ -40,7 +40,7 @@ var r = BigNumber.ZERO;
 var update_divisor = true;
 
 var q1, q2, t, k, m, n;
-var q1Exp, MTerm, NTerm, fxUpg, baseUpg;
+var q1Exp, UnlTerm, fxUpg, baseUpg;
 
 var init = () => {
     currency = theory.createCurrency();
@@ -173,21 +173,24 @@ var init = () => {
     }
 
     {
-        MTerm = theory.createMilestoneUpgrade(1, 1);
-        MTerm.description = Localization.getUpgradeAddTermDesc("m");
-        MTerm.info = Localization.getUpgradeAddTermInfo("m");
-        MTerm.boughtOrRefunded = (_) => {theory.invalidatePrimaryEquation(); updateAvailability(); };
+        UnlTerm = theory.createMilestoneUpgrade(1, 2);
+        UnlTerm.getDescription = (_) => {
+            if(UnlTerm.level == 0) {
+                return Localization.getUpgradeAddTermDesc("m");
+            }
+            return Localization.getUpgradeAddTermDesc("n");
+        }
+        UnlTerm.getInfo = (_) => { 
+            if(UnlTerm.level == 0) {
+                return Localization.getUpgradeAddTermInfo("m");
+            }
+            return Localization.getUpgradeAddTermInfo("n");
+        }
+        UnlTerm.boughtOrRefunded = (_) => {theory.invalidatePrimaryEquation(); updateAvailability(); };
     }
 
     {
-        NTerm = theory.createMilestoneUpgrade(2, 1);
-        NTerm.description = Localization.getUpgradeAddTermDesc("n");
-        NTerm.info = Localization.getUpgradeAddTermInfo("n");
-        NTerm.boughtOrRefunded = (_) => {theory.invalidatePrimaryEquation(); updateAvailability(); };
-    }
-
-    {
-        fxUpg = theory.createMilestoneUpgrade(3, 1);
+        fxUpg = theory.createMilestoneUpgrade(2, 1);
         fxUpg.getDescription = (_) => {
             if (fxUpg.level == 0){
                 return "$\\text{Approximate }\\sin(x) \\text{ to 5 terms}$";
@@ -206,10 +209,8 @@ var init = () => {
 
         };
         fxUpg.boughtOrRefunded = (_) => {
-
             q2.level = 0;
             q = 0;
-            
             f_x = fxUpg.level;           
             theory.invalidatePrimaryEquation();
             theory.invalidateSecondaryEquation();
@@ -218,7 +219,7 @@ var init = () => {
     }
 
     {
-        baseUpg = theory.createMilestoneUpgrade(4, 1);
+        baseUpg = theory.createMilestoneUpgrade(3, 1);
         baseUpg.getDescription = (_) => {
             if(baseUpg.level == 0){
                 return "$\\text{Improve } \\lambda \\text{ Fraction to } 2/3^{i}$";
@@ -252,8 +253,8 @@ var updateAvailability = () => {
     baseUpg.maxLevel = 0 + perm2.level;
 
 
-    m.isAvailable = MTerm.level > 0;
-    n.isAvailable = NTerm.level > 0;
+    m.isAvailable = UnlTerm.level > 0;
+    n.isAvailable = UnlTerm.level > 1;
 }
 
 var tick = (elapsedTime, multiplier) => {
@@ -263,8 +264,8 @@ var tick = (elapsedTime, multiplier) => {
     let vq2 = getQ2(q2.level);
     let vt = getT(t.level);
     let vk = getK(k.level);
-    let vm = (MTerm.level > 0) ? getM(m.level) : 1;
-    let vn = (NTerm.level > 0) ? getN(n.level) : 1;
+    let vm = (UnlTerm.level > 0) ? getM(m.level) : 1;
+    let vn = (UnlTerm.level > 1) ? getN(n.level) : 1;
 
     let vapp = approx(vk,lambda_base);
 
@@ -351,8 +352,8 @@ var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.3;
     let result = "\\begin{matrix}";
     result += "\\dot{\\rho}=tr";
-    if(MTerm.level > 0) result +="m";
-    if(NTerm.level > 0) result +="n";
+    if(UnlTerm.level > 0) result +="m";
+    if(UnlTerm.level > 1) result +="n";
     result += "\\sqrt[3]{\\int_{0}^{";
     if(f_x<3){
         result += "q/\\pi"
