@@ -135,7 +135,6 @@ var init = () => {
         n.level = 1;
     }
 
-
     /////////////////////
     // Permanent Upgrades
     theory.createPublicationUpgrade(0, currency, 1e8);
@@ -240,7 +239,6 @@ var init = () => {
             theory.invalidateTertiaryEquation();
             updateAvailability();
         }
-        //baseUpg.canBeBought = (_) => baseUpg.level < perm2.level;
     }
 
     updateAvailability();
@@ -251,7 +249,6 @@ var updateAvailability = () => {
     baseUpg.isAvailable = perm2.level > 0;
     fxUpg.maxLevel = 0 + perm1.level;
     baseUpg.maxLevel = 0 + perm2.level;
-
 
     m.isAvailable = UnlTerm.level > 0;
     n.isAvailable = UnlTerm.level > 1;
@@ -313,7 +310,7 @@ var KCosts = [KCost1,KCost2,KCost3];
 
 //Milestone Cost
 var getMilCustomCost = (level) => {
-    //20,70,210,300,425,530,650,800,950,1100
+    //20,70,210,300,425,530,700,800,950,1150
     switch(level){
         case 0:
             return 2;
@@ -328,13 +325,13 @@ var getMilCustomCost = (level) => {
         case 5:
             return 53;
         case 6:
-            return 65;
+            return 70;
         case 7:
             return 80;
         case 8:
             return 95;
     }
-    return 110;
+    return 115;
 };
 
 
