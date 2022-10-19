@@ -1,4 +1,4 @@
-import { CompositeCost, CustomCost, ExponentialCost, FirstFreeCost, LinearCost } from "./api/Costs";
+import { CompositeCost, CustomCost, ExponentialCost, FirstFreeCost, FreeCost, LinearCost } from "./api/Costs";
 import { Localization } from "./api/Localization";
 import { parseBigNumber, BigNumber } from "./api/BigNumber";
 import { theory } from "./api/Theory";
@@ -47,6 +47,27 @@ var init = () => {
 
     ///////////////////
     // Regular Upgrades
+
+    //
+    {
+        let getDesc = (level) => "\\times \\rho \\text{ by 10}";
+        let getInfo = (level) => "$\\text{Gives e1 } \\rho$";
+        $2 = theory.createUpgrade(7, currency, new FreeCost());
+        $2.getDescription = (amount) => Utils.getMath(getDesc($2.level));
+        $2.getInfo = (amount) => getInfo($2.level + amount);
+        $2.bought = (_) => currency.value *= 10;
+    }
+
+    //
+    {
+        let getDesc = (level) => "\\times \\rho \\text{ by 1e10}";
+        let getInfo = (level) => "$\\text{Gives e10 } \\rho$";
+        $ = theory.createUpgrade(6, currency, new FreeCost());
+        $.getDescription = (amount) => Utils.getMath(getDesc($.level));
+        $.getInfo = (amount) => getInfo($.level + amount);
+        $.bought = (_) => currency.value *= 1e10;
+    }
+
     
     //t
     {
@@ -62,7 +83,7 @@ var init = () => {
     {
         let getDesc = (level) => "q_1=" + getQ1(level).toString(0);
         let getInfo = (level) => "q_1=" + getQ1(level).toString(0);
-        q1 = theory.createUpgrade(1, currency, new FirstFreeCost(new ExponentialCost(20, 5)));
+        q1 = theory.createUpgrade(1, currency, new FirstFreeCost(new ExponentialCost(20, Math.log2(3))));
         q1.getDescription = (amount) => Utils.getMath(getDesc(q1.level));
         q1.getInfo = (amount) => Utils.getMathTo(getInfo(q1.level), getInfo(q1.level + amount));
     }
@@ -73,8 +94,8 @@ var init = () => {
         let getInfo = (level) => "q_2=" + getQ2(level).toString(0);
         q2 = theory.createUpgrade(2, currency, new CustomCost(
             level => q2Costs[Math.min(2,fxUpg.level)].getCost(level) ,
-            (level,extra) => q2Costs[Math.min(2,fxUpg.level)].getSum(level,level+extra),
-            (level,vrho) => q2Costs[Math.min(2,fxUpg.level)].getMax(level,vrho)
+            (level,extra) => q2Costs[fxUpg.level].getSum(level,level+extra),
+            (level,vrho) => q2Costs[fxUpg.level].getMax(level,vrho)
         ));
         q2.getDescription = (amount) => Utils.getMath(getDesc(q2.level));
         q2.getInfo = (amount) => Utils.getMathTo(getInfo(q2.level), getInfo(q2.level + amount));
@@ -99,7 +120,7 @@ var init = () => {
     {
         let getDesc = (level) => "m= 1.5^{" + level + "}";
         let getInfo = (level) => "m=" + getM(level).toString(0);
-        m = theory.createUpgrade(4, currency, new ExponentialCost(1e3, Math.log2(4.44)));
+        m = theory.createUpgrade(4, currency, new ExponentialCost(1e6, Math.log2(4.44)));
         m.getDescription = (amount) => Utils.getMath(getDesc(m.level));
         m.getInfo = (amount) => Utils.getMathTo(getInfo(m.level), getInfo(m.level + amount));
     }
@@ -108,7 +129,7 @@ var init = () => {
     {
         let getDesc = (level) => "n= " + getN(level).toString(0);
         let getInfo = (level) => "n=" + getN(level).toString(0);
-        n = theory.createUpgrade(5, currency, new ExponentialCost(1e10, Math.log2(1.531)));
+        n = theory.createUpgrade(5, currency, new ExponentialCost(1e69, Math.log2(8)));
         n.getDescription = (amount) => Utils.getMath(getDesc(n.level));
         n.getInfo = (amount) => Utils.getMathTo(getInfo(n.level), getInfo(n.level + amount));
         n.level = 1;
@@ -122,17 +143,19 @@ var init = () => {
     theory.createAutoBuyerUpgrade(2, currency, 1e25);
 
     {
-        perm1 = theory.createPermanentUpgrade(3, currency, new ExponentialCost(1e300,Math.log2(1e20)));
-        perm1.getDescription = (amount) => "$\\text{Unlock f(x) Milestone lv }$"+(perm1.level+1);
-        perm1.getInfo = (amount) => "$\\text{Unlocks the f(x) Milestone lv }$"+(perm1.level+1);
+        perm1 = theory.createPermanentUpgrade(3, currency, new CompositeCost(2,
+            new ExponentialCost(1e100,BigNumber.TEN.pow(350).log2()),
+            new ExponentialCost(BigNumber.TEN.pow(1050),1)));
+        perm1.getDescription = (amount) => "$\\text{Unlock f(x) Milestone lv }$"+(Math.min(perm1.level+1,3));
+        perm1.getInfo = (amount) => "$\\text{Unlocks the f(x) Milestone lv }$"+(Math.min(perm1.level+1,3));
         perm1.boughtOrRefunded = (_) => updateAvailability();
         perm1.maxLevel = 3;
     }
 
     {
-        perm2 = theory.createPermanentUpgrade(4, currency, new ExponentialCost(1e300,Math.log2(1e50)));
-        perm2.getDescription = (amount) => "$\\text{Unlock }\\lambda \\text{ Milestone lv }$"+(perm2.level+1);
-        perm2.getInfo = (amount) => "$\\text{Unlocks the }\\lambda \\text{ Milestone lv }$"+(perm2.level+1);
+        perm2 = theory.createPermanentUpgrade(4, currency, new ExponentialCost(BigNumber.TEN.pow(350),BigNumber.TEN.pow(400).log2()));
+        perm2.getDescription = (amount) => "$\\text{Unlock }\\lambda \\text{ Milestone lv }$"+Math.min((perm2.level+1),2);
+        perm2.getInfo = (amount) => "$\\text{Unlocks the }\\lambda \\text{ Milestone lv }$"+Math.min((perm2.level+1),2);
         perm2.boughtOrRefunded = (_) => updateAvailability();
         perm2.maxLevel = 2;
     }
@@ -144,8 +167,8 @@ var init = () => {
 
     {
         q1Exp = theory.createMilestoneUpgrade(0, 3);
-        q1Exp.description = Localization.getUpgradeIncCustomExpDesc("q_1", "0.15");
-        q1Exp.info = Localization.getUpgradeIncCustomExpInfo("q_1", "0.15");
+        q1Exp.description = Localization.getUpgradeIncCustomExpDesc("q_1", "0.01");
+        q1Exp.info = Localization.getUpgradeIncCustomExpInfo("q_1", "0.01");
         q1Exp.boughtOrRefunded = (_) => {theory.invalidateSecondaryEquation();updateAvailability();};
     }
 
@@ -164,7 +187,7 @@ var init = () => {
     }
 
     {
-        fxUpg = theory.createMilestoneUpgrade(3, 3);
+        fxUpg = theory.createMilestoneUpgrade(3, 1);
         fxUpg.getDescription = (_) => {
             if (fxUpg.level == 0){
                 return "$\\text{Approximate }\\sin(x) \\text{ to 5 terms}$";
@@ -183,21 +206,19 @@ var init = () => {
 
         };
         fxUpg.boughtOrRefunded = (_) => {
-            //Bought/Refunded 1st/2nd milestone
-            if(!(f_x == 3 || fxUpg.level == 3)){
-                q2.level = 0;
-                q = 0;
-            }
+
+            q2.level = 0;
+            q = 0;
+            
             f_x = fxUpg.level;           
             theory.invalidatePrimaryEquation();
             theory.invalidateSecondaryEquation();
             updateAvailability();
         }
-        fxUpg.canBeBought = (_) => fxUpg.level < perm1.level;
     }
 
     {
-        baseUpg = theory.createMilestoneUpgrade(4, 2);
+        baseUpg = theory.createMilestoneUpgrade(4, 1);
         baseUpg.getDescription = (_) => {
             if(baseUpg.level == 0){
                 return "$\\text{Improve } \\lambda \\text{ Fraction to } 2/3^{i}$";
@@ -218,7 +239,7 @@ var init = () => {
             theory.invalidateTertiaryEquation();
             updateAvailability();
         }
-        baseUpg.canBeBought = (_) => baseUpg.level < perm2.level;
+        //baseUpg.canBeBought = (_) => baseUpg.level < perm2.level;
     }
 
     updateAvailability();
@@ -227,14 +248,16 @@ var init = () => {
 var updateAvailability = () => {
     fxUpg.isAvailable = perm1.level > 0;
     baseUpg.isAvailable = perm2.level > 0;
+    fxUpg.maxLevel = 0 + perm1.level;
+    baseUpg.maxLevel = 0 + perm2.level;
+
 
     m.isAvailable = MTerm.level > 0;
     n.isAvailable = NTerm.level > 0;
 }
 
 var tick = (elapsedTime, multiplier) => {
-    let speedup = 100;
-    let dt = BigNumber.from(elapsedTime*multiplier*speedup); 
+    let dt = BigNumber.from(elapsedTime*multiplier); 
     let bonus = theory.publicationMultiplier; 
     let vq1 = getQ1(q1.level).pow(getQ1Exp(q1Exp.level));
     let vq2 = getQ2(q2.level);
@@ -276,14 +299,15 @@ var setInternalState = (state) => {
 
 //Q2 Cost
 var q2Cost1 = new ExponentialCost(1e7, Math.log2(5e3)); //fx == 0 
-var q2Cost2 = new ExponentialCost(1e7, Math.log2(3e5)); //fx == 1 
-var q2Cost3 = new ExponentialCost(1, Math.log2(3e5));   //fx >= 2
-var q2Costs = [q2Cost1,q2Cost2,q2Cost3];
+var q2Cost2 = new ExponentialCost(1e7, Math.log2(5e2)); //fx == 1 
+var q2Cost3 = new ExponentialCost(1e-10, Math.log2(4.2e2));//fx == 2
+var q2Cost4 = new ExponentialCost(BigNumber.TEN.pow(90.5), Math.log2(2.43e2));//fx == 3
+var q2Costs = [q2Cost1,q2Cost2,q2Cost3,q2Cost4];
 
 //K Cost
-var KCost1 = new ExponentialCost(1e2,Math.log2(10));                     //base == 2
-var KCost2 = new ExponentialCost(1e2,Math.log2(38));                     // base == 3
-var KCost3 = new ExponentialCost(BigNumber.TEN.pow(47.5),Math.log2(78)); //base == 4
+var KCost1 = new ExponentialCost(1e2,Math.log2(10));//base == 2
+var KCost2 = new ExponentialCost(1e-5,Math.log2(34));//base == 3
+var KCost3 = new ExponentialCost(1e-10,Math.log2(85.5));//base == 4
 var KCosts = [KCost1,KCost2,KCost3];
 
 //Milestone Cost
@@ -349,7 +373,7 @@ var getSecondaryEquation = () => {
     result += fx_latex();
     result += ",\\quad\\lambda = \\sum_{i=1}^{K}\\frac{"+(lambda_base-1).toString(0)+"}{"+lambda_base.toString(0)+"^{i}}\\\\\\\\";
     result += "&\\quad\\qquad\\qquad\\dot{q}=q_1"
-    if (q1Exp.level > 0) result += `^{${1+q1Exp.level*0.15}}`;
+    if (q1Exp.level > 0) result += `^{${1+q1Exp.level*0.01}}`;
     result += "q_2\\quad"+theory.latexSymbol + "=\\max\\rho^{0.1}";
     result += ""
     return result;
@@ -362,7 +386,7 @@ var getTertiaryEquation = () => {
     if(getK(k.level) < 8 && 1/lambda_base.pow(getK(k.level))>0.001){
         result += (1/lambda_base.pow(getK(k.level))).toString(4);
     }else{
-        result += lambda_man+"e"+lambda_exp;
+        result += lambda_man.toString(3)+"e"+lambda_exp.toString();
     }
     
     result += ",&\\qquad\\qquad\\quad\\dot{\\rho} ="
@@ -429,6 +453,6 @@ var getK = (level) => BigNumber.from(level);
 var getM = (level) => BigNumber.from(1.5).pow(level);
 var getN = (level) => Utils.getStepwisePowerSum(level, 2, 11,0);
 
-var getQ1Exp = (level) => BigNumber.from(1 + level * 0.15);
+var getQ1Exp = (level) => BigNumber.from(1 + level * 0.01);
 
 init();
