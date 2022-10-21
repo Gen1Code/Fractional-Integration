@@ -339,7 +339,7 @@ var tick = (elapsedTime, multiplier) => {
     q += vq1 * vq2 * dt;
     if (q1.level > 0) r += vapp * dt;
     
-    rho_dot = vm * vn * t_cumulative * norm_int(q/(f_x < 3 ? BigNumber.PI : BigNumber.ONE)).pow(1/3) * r;
+    rho_dot = vm * vn * t_cumulative * norm_int(q/(f_x < 3 ? BigNumber.PI : BigNumber.ONE)).pow(BigNumber.ONE/BigNumber.PI) * r;
     currency.value += bonus * rho_dot * dt;
 
     theory.invalidateTertiaryEquation();
@@ -413,7 +413,7 @@ var getPrimaryEquation = () => {
     result += "\\dot{\\rho}=tr";
     if(UnlTerm.level > 0) result +="m";
     if(UnlTerm.level > 1) result +="n";
-    result += "\\sqrt[3]{\\int_{0}^{";
+    result += "\\sqrt[\\pi]{\\int_{0}^{";
     if(f_x<3){
         result += "q/\\pi"
     }else{
