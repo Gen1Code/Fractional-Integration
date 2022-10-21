@@ -275,7 +275,7 @@ var init = () => {
     "The Professor comes up to you and scoffs.\n"+
     "\"Do you really think that you have proven anything yet? You'll need bigger numbers that that to really show that it's true. You remember what it took for me to prove my equation?\"\n"+
     "You smile at them and nod... and continue to push. Maybe you can add more stuff to make it go faster...";
-    theory.createStoryChapter(4, "Insight", story_chapter_5, () => rho >= BigNumber.TEN.pow(500));
+    theory.createStoryChapter(4, "Insight", story_chapter_5, () => currency >= BigNumber.TEN.pow(500));
 
     let story_chapter_6 = "You're loosing faith in what you have so far...\n"+
     "You think back to when your colleague visited you the first time.\n"+
@@ -294,7 +294,7 @@ var init = () => {
     "\"Ah, that should do it. I see you used my own equation to push things along. What do you think it will be now?\"\n"+
     "You respond with a smile on your face.\n"+
     "I think we will just have to wait and see";
-    theory.createStoryChapter(7, "EZ Tau Gains Bois!!", story_chapter_8, () => rho >= BigNumber.TEN.pow(1150));
+    theory.createStoryChapter(7, "EZ Tau Gains Bois!!", story_chapter_8, () => currency >= BigNumber.TEN.pow(1150));
 
     let story_chapter_9 = "You and the Professor are at a conference where you are giving a speech on the equation. "+
     "Everyone is astonished that you showed it was true through brute force.\n"+
@@ -302,7 +302,7 @@ var init = () => {
     "Who knows? But we know for sure that it's really close to the integral.\n"+
     "(Thank you all for playing this theory so far. I had a blast making it and I'm so grateful to Gen and XLII for helping me! There is still more tau to gain! Grind on!!\n"+
     "-Snaeky)";
-    theory.createStoryChapter(8, "Closure", story_chapter_9, () => rho >= BigNumber.TEN.pow(1250));
+    theory.createStoryChapter(8, "Closure", story_chapter_9, () => currency >= BigNumber.TEN.pow(1250));
 
 }
 
