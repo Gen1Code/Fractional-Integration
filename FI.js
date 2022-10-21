@@ -438,8 +438,8 @@ var fx_latex = () => {
     }
 }
 
-var getPublicationMultiplier = (tau) => tau.isZero ? BigNumber.ONE : tau.pow(0.78);
-var getPublicationMultiplierFormula = (symbol) => symbol + "^{0.78}";
+var getPublicationMultiplier = (tau) => tau.isZero ? BigNumber.ONE : tau.pow(0.65);
+var getPublicationMultiplierFormula = (symbol) => symbol + "^{0.65}";
 var getTau = () => currency.value.pow(BigNumber.from(0.1));
 var getCurrencyFromTau = (tau) => [tau.max(BigNumber.ONE).pow(10), currency.symbol];
 var get2DGraphValue = () => currency.value.sign * (BigNumber.ONE + currency.value.abs()).log10().toNumber();
