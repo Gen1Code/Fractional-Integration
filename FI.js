@@ -31,7 +31,7 @@ var lambda_base = BigNumber.TWO;
 //0 - cos(x)
 //1 - sin(x)
 //2 - log10(1+x)    
-//3 - e^x -1 
+//3 - e^x 
 var f_x = 0;
 
 var q = BigNumber.ZERO;
@@ -192,11 +192,11 @@ var init = () => {
         fxUpg = theory.createMilestoneUpgrade(2, 1);
         fxUpg.getDescription = (_) => {
             if (fxUpg.level == 0){
-                return "$\\text{Approximate }\\sin(x) \\text{ to 5 terms}$";
+                return "$\\text{Approximate }\\sin(x) \\text{ to 3 terms}$";
             }else if (fxUpg.level == 1){
                 return "$\\text{Approximate }\\log_{10}(1+x) \\text{ to 5 terms}$";
             }
-            return "$\\text{Approximate }e^{x} \\text{ to 5 terms \\& {} Remove / } \\pi \\text{ in Integral limit} $";
+            return "$\\text{Approximate }e^{x} \\text{ to 6 terms \\& {} Remove / } \\pi \\text{ in Integral limit} $";
         };
         fxUpg.getInfo = (_) => {
             if (fxUpg.level == 0){
@@ -242,6 +242,68 @@ var init = () => {
     }
 
     updateAvailability();
+
+    //////////////////
+    // Story Chapters
+
+    // Story Chapters
+    let story_chapter_1 = "While studying some techniques in integration, you think about what it would mean to have a partial derivative or integral...\n"+
+    "You remember your friend, a Professor that did some work with Differential and Integral Calculus, and ask them what they thought.\n"+
+    "They said, \"oh, I think I saw something about a  'Riemann-Liuoville Fractional Derivatives' in a text book a long time ago.\"\n"+
+    "You don't know if it really works and think of a way to test if it works. The equation you make is as follows.";
+    theory.createStoryChapter(0, "An Idea", story_chapter_1, () => rho >= 1);
+
+    let story_chapter_2 = "Wow, you didn't expect it to work this well!\n"+
+    "But, you think it can go a but faster, you add a new variable to speed things up.";
+    theory.createStoryChapter(1, "Pushing Forwards", story_chapter_2, () => UnlTerm > 0);
+
+    let story_chapter_3 = "The m and n upgrades are doing well, but you are getting impatient."+
+    "It's taking too long to really show anything concrete."+
+    "Sure, rho, is increasing, but its not enough to really show that this weird looking \"partial\" integral converges to the actual integral...\n"+
+    "Maybe changing the equation will speed things up!";
+    theory.createStoryChapter(2, "Converging to the Truth", story_chapter_3, () => f_x == 1);
+
+    let story_chapter_4 = "The Professor comes to you and ask how things are going.\n"+
+    "You inform them that things are going well, but still very slow. You ask him about any way to speed things up.\n"+
+    "\"Why haven't you adjusted the lambda function yet? Isn't that very slow to converge to 1?\"\n"+
+    "Oh yeah!!! There are other infinite sums that converge to 1!\n"+
+    "You change the lambda function.";
+    theory.createStoryChapter(3, "A Lambdmark Discovery", story_chapter_4, () => perm2.level == 1);
+
+    let story_chapter_5 = "Changing the equation again seems to have helped a lot.\n"+
+    "You are satisfied with your work and think that you have done your due diligence with showing this conjecture to be true...\n"+
+    "The Professor comes up to you and scoffs.\n"+
+    "\"Do you really think that you have proven anything yet? You'll need bigger numbers that that to really show that it's true. You remember what it took for me to prove my equation?\"\n"+
+    "You smile at them and nod... and continue to push. Maybe you can add more stuff to make it go faster...";
+    theory.createStoryChapter(4, "Insight", story_chapter_5, () => rho >= BigNumber.TEN.pow(500));
+
+    let story_chapter_6 = "You're loosing faith in what you have so far...\n"+
+    "You think back to when your colleague visited you the first time.\n"+
+    "Will 3/4 work better than 2/3?";
+    theory.createStoryChapter(5, "More of the Same", story_chapter_6, () => perm2.level == 2);
+
+    let story_chapter_7 = "You feel as though f(x) needs something stronger than anything you have given it before."+
+    "Every other f(x) you have used has run out of steam and is slowing to a crawl.\n"+
+    "What is a really good equation that gets very big, very fast?...\n"+
+    "e^x!!!\n"+
+    "Of course, it was staring you in thw face the whole time. The professor was right earlier on! Why not use his own equation!";
+    theory.createStoryChapter(6, "Full Throttle", story_chapter_7, () =>  perm1.level == 3);
+
+    let story_chapter_8 = "Well, you feel as though there aren't any more changes to make.\n"+
+    "The Professor comes by once more.\n"+
+    "\"Ah, that should do it. I see you used my own equation to push things along. What do you think it will be now?\"\n"+
+    "You respond with a smile on your face.\n"+
+    "I think we will just have to wait and see";
+    theory.createStoryChapter(7, "EZ Tau Gains Bois!!", story_chapter_8, () => rho >= BigNumber.TEN.pow(1150));
+
+    let story_chapter_9 = "You and the Professor are at a conference where you are giving a speech on the equation. "+
+    "Everyone is astonished that you showed it was true through brute force.\n"+
+    "You wonder how much bigger rho can get now that you have pushed it so far.\n"+
+    "Who knows? But we know for sure that it's really close to the integral.\n"+
+    "(Thank you all for playing this theory so far. I had a blast making it and I'm so grateful to Gen and XLII for helping me! There is still more tau to gain! Grind on!!\n"+
+    "-Snaeky)";
+    theory.createStoryChapter(8, "Closure", story_chapter_9, () => rho >= BigNumber.TEN.pow(1250));
+
 }
 
 var updateAvailability = () => {
@@ -277,7 +339,7 @@ var tick = (elapsedTime, multiplier) => {
     q += vq1 * vq2 * dt;
     if (q1.level > 0) r += vapp * dt;
     
-    rho_dot = vm * vn * t_cumulative * norm_int(q/(f_x < 3 ? BigNumber.PI : 1)).pow(1/3) * r;
+    rho_dot = vm * vn * t_cumulative * norm_int(q/(f_x < 3 ? BigNumber.PI : BigNumber.ONE)).pow(1/3) * r;
     currency.value += bonus * rho_dot * dt;
 
     theory.invalidateTertiaryEquation();
