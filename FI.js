@@ -442,7 +442,7 @@ var getSecondaryEquation = () => {
 var getTertiaryEquation = () => {
     let result = "";
     result += "\\begin{matrix}";
-    result += "&\\qquad\\qquad\\quad1/"+lambda_base.toString(0)+"^{k}=";
+    result += "&\\qquad\\qquad\\quad1-\\lambda=";
     if(getK(k.level) < 8 && 1/lambda_base.pow(getK(k.level))>0.001){
         result += (1/lambda_base.pow(getK(k.level))).toString(4);
     }else{
