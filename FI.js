@@ -250,22 +250,22 @@ var init = () => {
     let story_chapter_1 = "While studying some techniques in integration, you think about what it would mean to have a partial derivative or integral...\n"+
     "You remember your friend, a Professor that did some work with Differential and Integral Calculus, and ask them what they thought.\n"+
     "They said, \"oh, I think I saw something about a  'Riemann-Liuoville Fractional Derivatives' in a text book a long time ago.\"\n"+
-    "You don't know if it really works and think of a way to test if it works. The equation you make is as follows.";
+    "You don't know if it really works, but you want to test it somehow. The equation you make is as follows.";
     theory.createStoryChapter(0, "An Idea", story_chapter_1, () => currency.value >= 1);
 
     let story_chapter_2 = "Wow, you didn't expect it to work this well!\n"+
-    "But, you think it can go a but faster, you add a new variable to speed things up.";
+    "But, you think it can go a bit faster, you add a new variable to speed things up.";
     theory.createStoryChapter(1, "Pushing Forwards", story_chapter_2, () => UnlTerm.level > 0);
 
     let story_chapter_3 = "The m and n upgrades are doing well, but you are getting impatient."+
     "It's taking too long to really show anything concrete."+
-    "Sure, rho, is increasing, but its not enough to really show that this weird looking \"partial\" integral converges to the actual integral...\n"+
-    "Maybe changing the equation will speed things up!";
+    "Sure, ρ, is increasing, but its not enough to really show that this weird looking \"partial\" integral converges to the actual integral...\n"+
+    "Maybe changing f(x) will speed things up!";
     theory.createStoryChapter(2, "Converging to the Truth", story_chapter_3, () => perm1.level == 1);
 
     let story_chapter_4 = "The Professor comes to you and ask how things are going.\n"+
     "You inform them that things are going well, but still very slow. You ask him about any way to speed things up.\n"+
-    "\"Why haven't you adjusted the lambda function yet? Isn't that very slow to converge to 1?\"\n"+
+    "\"Why haven't you adjusted the lambda function yet? Isn't that sum very slow to converge to 1?\"\n"+
     "Oh yeah!!! There are other infinite sums that converge to 1!\n"+
     "You change the lambda function.";
     theory.createStoryChapter(3, "A Lambdmark Discovery", story_chapter_4, () => perm2.level == 1);
@@ -286,7 +286,7 @@ var init = () => {
     "Every other f(x) you have used has run out of steam and is slowing to a crawl.\n"+
     "What is a really good equation that gets very big, very fast?...\n"+
     "e^x!!!\n"+
-    "Of course, it was staring you in thw face the whole time. The professor was right earlier on! Why not use his own equation!";
+    "Of course, it was staring you in the face the whole time. The professor was right earlier on! Why not use his own equation!";
     theory.createStoryChapter(6, "Full Throttle", story_chapter_7, () =>  perm1.level == 3);
 
     let story_chapter_8 = "Well, you feel as though there aren't any more changes to make.\n"+
@@ -298,9 +298,9 @@ var init = () => {
 
     let story_chapter_9 = "You and the Professor are at a conference where you are giving a speech on the equation. "+
     "Everyone is astonished that you showed it was true through brute force.\n"+
-    "You wonder how much bigger rho can get now that you have pushed it so far.\n"+
+    "You wonder how much bigger ρ can get now that you have pushed it so far.\n"+
     "Who knows? But we know for sure that it's really close to the integral.\n"+
-    "(Thank you all for playing this theory so far. I had a blast making it and I'm so grateful to Gen and XLII for helping me! There is still more tau to gain! Grind on!!\n"+
+    "(Thank you all for playing this theory so far. I had a blast making it and I'm so grateful to Gen and XLII for helping me! There is still more τ to gain! Grind on!!\n"+
     "-Snaeky)";
     theory.createStoryChapter(8, "Closure", story_chapter_9, () => currency.value >= BigNumber.TEN.pow(1250));
 
