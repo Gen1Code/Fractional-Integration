@@ -209,7 +209,7 @@ var init = () => {
         };
         fxUpg.boughtOrRefunded = (_) => {
             q2.level = 0;
-            q = 0;
+            q = BigNumber.ZERO;
             f_x = fxUpg.level;           
             theory.invalidatePrimaryEquation();
             theory.invalidateSecondaryEquation();
