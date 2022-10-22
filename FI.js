@@ -7,7 +7,7 @@ import { Utils } from "./api/Utils";
 var id = "fractional_integration";
 var name = "Fractional Integration";
 var description = "The functions between a function and it's derivative have many ways of being shown, this is one of them."+
-                    "Fractional integration is a way to calculate what is between a function and its integral and is a smooth transition."+
+                    "Fractional integration is a way to calculate what is between a function and it's integral and is a smooth transition."+
                     "As such, as a fractional integral approaches 1, it should become the integral.";
 var authors = "Snaeky (SnaekySnacks#1161) - Idea\nGen (Gen#3006) - Coding\nXLII (XLII#0042) - Balancing";
 var version = 1;
@@ -254,12 +254,13 @@ var init = () => {
     theory.createStoryChapter(0, "An Idea", story_chapter_1, () => currency.value >= 1);
 
     let story_chapter_2 = "Wow, you didn't expect it to work this well!\n"+
-    "But, you think it can go a bit faster, you add a new variable to speed things up.";
+    "But, you think it can go faster!\n" +
+    "You add a new variable to speed things up.";
     theory.createStoryChapter(1, "Pushing Forwards", story_chapter_2, () => UnlTerm.level > 0);
 
     let story_chapter_3 = "The m and n upgrades are doing well, but you are getting impatient."+
     "It's taking too long to really show anything concrete."+
-    "Sure, ρ, is increasing, but its not enough to really show that this weird looking \"partial\" integral converges to the actual integral...\n"+
+    "Sure, ρ, is increasing, but it's not enough to really show that this weird looking \"partial\" integral converges to the actual integral...\n"+
     "Maybe changing f(x) will speed things up!";
     theory.createStoryChapter(2, "Converging to the Truth", story_chapter_3, () => perm1.level == 1);
 
@@ -273,11 +274,11 @@ var init = () => {
     let story_chapter_5 = "Changing the equation again seems to have helped a lot.\n"+
     "You are satisfied with your work and think that you have done your due diligence with showing this conjecture to be true...\n"+
     "The Professor comes up to you and scoffs.\n"+
-    "\"Do you really think that you have proven anything yet? You'll need bigger numbers that that to really show that it's true. You remember what it took for me to prove my equation?\"\n"+
+    "\"Do you really think that you have proven anything yet? You'll need bigger numbers than that to really show that it's true. You remember what it took for me to prove my equation?\"\n"+
     "You smile at them and nod... and continue to push. Maybe you can add more stuff to make it go faster...";
     theory.createStoryChapter(4, "Insight", story_chapter_5, () => currency.value >= BigNumber.TEN.pow(500));
 
-    let story_chapter_6 = "You're loosing faith in what you have so far...\n"+
+    let story_chapter_6 = "You're losing faith in what you have so far...\n"+
     "You think back to when your colleague visited you the first time.\n"+
     "Will 3/4 work better than 2/3?";
     theory.createStoryChapter(5, "More of the Same", story_chapter_6, () => perm2.level == 2);
@@ -442,25 +443,24 @@ var getSecondaryEquation = () => {
 var getTertiaryEquation = () => {
     let result = "";
     result += "\\begin{matrix}";
-    result += "&\\qquad\\qquad\\quad 1-\\lambda =";
+    result += "&\\qquad\\qquad\\qquad\\qquad 1-\\lambda =";
     if(getK(k.level) < 8 && 1/lambda_base.pow(getK(k.level))>0.001){
         result += (1/lambda_base.pow(getK(k.level))).toString(4);
     }else{
         result += lambda_man.toString(3)+"e"+lambda_exp.toString();
     }
     
-    result += ",&\\qquad\\qquad\\quad\\dot{\\rho} ="
-    result += rho_dot.toString()+"\\\\";
-
-
-    result += ",&\\qquad t=";
-    result += t_cumulative.toString();
+    result+="\\\\";
 
     result += ",&q=";
     result += q.toString();
 
     result += ",&r=";
     result += r.toString()
+
+    result += ",&t=";
+    result += t_cumulative.toString();
+
     result += "\\end{matrix}";
 
     return result;
