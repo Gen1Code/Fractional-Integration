@@ -128,7 +128,7 @@ var init = () => {
     {
         let getDesc = (level) => "n= " + getN(level).toString(0);
         let getInfo = (level) => "n=" + getN(level).toString(0);
-        n = theory.createUpgrade(5, currency, new ExponentialCost(1e69, Math.log2(8)));
+        n = theory.createUpgrade(5, currency, new ExponentialCost(1e69, Math.log2(11)));
         n.getDescription = (amount) => Utils.getMath(getDesc(n.level));
         n.getInfo = (amount) => Utils.getMathTo(getInfo(n.level), getInfo(n.level + amount));
         n.level = 1;
@@ -359,14 +359,14 @@ var setInternalState = (state) => {
 //Q2 Cost
 var q2Cost1 = new ExponentialCost(1e7, Math.log2(5e3)); //fx == 0 
 var q2Cost2 = new ExponentialCost(1e7, Math.log2(3e3)); //fx == 1 
-var q2Cost3 = new ExponentialCost(1e-10, Math.log2(1.9e3));//fx == 2
-var q2Cost4 = new ExponentialCost(BigNumber.TEN.pow(97), Math.log2(9.31e2));//fx == 3
+var q2Cost3 = new ExponentialCost(1e-10, Math.log2(2.27e3));//fx == 2
+var q2Cost4 = new ExponentialCost(BigNumber.TEN.pow(95), Math.log2(1.08e3));//fx == 3
 var q2Costs = [q2Cost1,q2Cost2,q2Cost3,q2Cost4];
 
 //K Cost
 var KCost1 = new ExponentialCost(1e2,Math.log2(10));//base == 2
-var KCost2 = new ExponentialCost(1e-5,Math.log2(34));//base == 3
-var KCost3 = new ExponentialCost(1e-7,Math.log2(85.1));//base == 4
+var KCost2 = new ExponentialCost(1e-5,Math.log2(37));//base == 3
+var KCost3 = new ExponentialCost(1e-10,Math.log2(95));//base == 4
 var KCosts = [KCost1,KCost2,KCost3];
 
 //Milestone Cost
@@ -511,7 +511,7 @@ var getQ1 = (level) => Utils.getStepwisePowerSum(level, 5, 10, 0);
 var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getK = (level) => BigNumber.from(level);
 var getM = (level) => BigNumber.from(1.5).pow(level);
-var getN = (level) => Utils.getStepwisePowerSum(level, 2, 11,0);
+var getN = (level) => Utils.getStepwisePowerSum(level, 3, 11,0);
 
 var getQ1Exp = (level) => BigNumber.from(1 + level * 0.01);
 
