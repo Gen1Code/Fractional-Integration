@@ -32,7 +32,6 @@ var lambda_base = BigNumber.TWO;
 //1 - sin(x)
 //2 - log10(1+x)    
 //3 - e^x 
-var f_x = 0;
 
 var q = BigNumber.ZERO;
 var r = BigNumber.ZERO;
@@ -209,8 +208,7 @@ var init = () => {
         };
         fxUpg.boughtOrRefunded = (_) => {
             q2.level = 0;
-            q = BigNumber.ZERO;
-            f_x = fxUpg.level;           
+            q = BigNumber.ZERO;          
             theory.invalidatePrimaryEquation();
             theory.invalidateSecondaryEquation();
             updateAvailability();
@@ -240,8 +238,6 @@ var init = () => {
             updateAvailability();
         }
     }
-
-    updateAvailability();
 
     //////////////////
     // Story Chapters
@@ -305,6 +301,7 @@ var init = () => {
     "-Snaeky)";
     theory.createStoryChapter(8, "Closure", story_chapter_9, () => currency.value >= BigNumber.TEN.pow(1250));
 
+    updateAvailability();
 }
 
 var updateAvailability = () => {
@@ -340,7 +337,7 @@ var tick = (elapsedTime, multiplier) => {
     q += vq1 * vq2 * dt;
     if (q1.level > 0) r += vapp * dt;
     
-    rho_dot = vm * vn * t_cumulative * norm_int(q/(f_x < 3 ? BigNumber.PI : BigNumber.ONE)).pow(BigNumber.ONE/BigNumber.PI) * r;
+    rho_dot = vm * vn * t_cumulative * norm_int(q/(fxUpg.level < 3 ? BigNumber.PI : BigNumber.ONE)).pow(BigNumber.ONE/BigNumber.PI) * r;
     currency.value += bonus * rho_dot * dt;
 
     theory.invalidateTertiaryEquation();
@@ -405,6 +402,7 @@ var postPublish = () => {
     update_divisor = true;
     k.level = 1;
     n.level = 1;
+    updateAvailability();
 }
 
 var getPrimaryEquation = () => {
@@ -415,7 +413,7 @@ var getPrimaryEquation = () => {
     if(UnlTerm.level > 0) result +="m";
     if(UnlTerm.level > 1) result +="n";
     result += "\\sqrt[\\pi]{\\int_{0}^{";
-    if(f_x<3){
+    if(fxUpg.level<3){
         result += "q/\\pi"
     }else{
         result += "q";
@@ -441,21 +439,22 @@ var getSecondaryEquation = () => {
 }
 
 var getTertiaryEquation = () => {
+    theory.tertiaryEquationScale = 1.1;
     let result = "";
     result += "\\begin{matrix}";
-    result += "&\\qquad\\qquad\\qquad\\qquad 1-\\lambda =";
+    result += "& 1-\\lambda =";
     if(getK(k.level) < 8 && 1/lambda_base.pow(getK(k.level))>0.001){
         result += (1/lambda_base.pow(getK(k.level))).toString(4);
     }else{
         result += lambda_man.toString(3)+"e"+lambda_exp.toString();
     }
-    
-    result+="\\\\";
 
     result += ",&q=";
     result += q.toString();
+    result+="\\\\";
 
-    result += ",&r=";
+
+    result += "&r=";
     result += r.toString()
 
     result += ",&t=";
@@ -474,7 +473,7 @@ var approx = (k_v,base) => {
 //integrates f(x) and returns value with 0 -> limit, as limits
 //abs not really needed?
 var norm_int = (limit) => {
-    switch (f_x){
+    switch (fxUpg.level){
         case 0:
             return (limit.pow(5)/120 - limit.pow(3)/6 + limit).abs();
         case 1:
@@ -488,7 +487,7 @@ var norm_int = (limit) => {
 
 //Returns correct latex for each f(x)
 var fx_latex = () => {
-    switch (f_x){
+    switch (fxUpg.level){
         case 0:
             return "1-\\frac{x^2}{2!}+\\frac{x^4}{4!}";
         case 1:
