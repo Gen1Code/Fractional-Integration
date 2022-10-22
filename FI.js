@@ -343,15 +343,16 @@ var tick = (elapsedTime, multiplier) => {
     theory.invalidateTertiaryEquation();
 }
 
-var getInternalState = () => `${t_cumulative} ${lambda_man} ${lambda_exp} ${q} ${r}`;
+var getInternalState = () => `${t_cumulative} ${lambda_man} ${lambda_exp} ${lambda_base} ${q} ${r}`;
 
 var setInternalState = (state) => {
     let values = state.split(" ");
     if (values.length > 0) t_cumulative = parseBigNumber(values[0]);
     if (values.length > 1) lambda_man = parseBigNumber(values[1]);
     if (values.length > 2) lambda_exp = parseBigNumber(values[2]);
-    if (values.length > 3) q = parseBigNumber(values[3]);
-    if (values.length > 4) r = parseBigNumber(values[4]);
+    if (values.length > 3) lambda_exp = parseBigNumber(values[3]);
+    if (values.length > 4) q = parseBigNumber(values[4]);
+    if (values.length > 5) r = parseBigNumber(values[5]);
 }
 
 
