@@ -1,4 +1,4 @@
-import { CompositeCost, CustomCost, ExponentialCost, FirstFreeCost, FreeCost, LinearCost } from "./api/Costs";
+import { CompositeCost, CustomCost, ExponentialCost, FirstFreeCost, FreeCost } from "./api/Costs";
 import { Localization } from "./api/Localization";
 import { parseBigNumber, BigNumber } from "./api/BigNumber";
 import { theory } from "./api/Theory";
@@ -6,8 +6,8 @@ import { Utils } from "./api/Utils";
 
 var id = "fractional_integration";
 var name = "Fractional Integration";
-var description = "The functions between a function and it's derivative have many ways of being shown, this is one of them."+
-                    "Fractional integration is a way to calculate what is between a function and it's integral and is a smooth transition."+
+var description = "The functions between a function and its derivative have many ways of being shown, this is one of them."+
+                    "Fractional integration is a way to calculate what is between a function and its integral and is a smooth transition."+
                     "As such, as a fractional integral approaches 1, it should become the integral.";
 var authors = "Snaeky (SnaekySnacks#1161) - Idea\nGen (Gen#3006) - Coding\nXLII (XLII#0042) - Balancing";
 var version = 1;
@@ -245,7 +245,7 @@ var init = () => {
     // Story Chapters
     let story_chapter_1 = "While studying some techniques in integration, you think about what it would mean to have a partial derivative or integral...\n"+
     "You remember your friend, a Professor that did some work with Differential and Integral Calculus, and ask them what they thought.\n"+
-    "They said, \"oh, I think I saw something about a  'Riemann-Liuoville Fractional Derivatives' in a text book a long time ago.\"\n"+
+    "They said, \"oh, I think I saw something about a  'Riemann-Liouville Fractional Derivatives' in a textbook a long time ago.\"\n"+
     "You don't know if it really works, but you want to test it somehow. The equation you make is as follows.";
     theory.createStoryChapter(0, "An Idea", story_chapter_1, () => currency.value >= 1);
 
@@ -256,14 +256,14 @@ var init = () => {
 
     let story_chapter_3 = "The m and n upgrades are doing well, but you are getting impatient."+
     "It's taking too long to really show anything concrete."+
-    "Sure, ρ, is increasing, but it's not enough to really show that this weird looking \"partial\" integral converges to the actual integral...\n"+
+    "Sure, ρ is increasing, but it's not enough to really show that this weird looking \"partial\" integral converges to the actual integral...\n"+
     "Maybe changing f(x) will speed things up!";
     theory.createStoryChapter(2, "Converging to the Truth", story_chapter_3, () => perm1.level == 1);
 
-    let story_chapter_4 = "The Professor comes to you and ask how things are going.\n"+
+    let story_chapter_4 = "The Professor comes to you and asks how things are going.\n"+
     "You inform them that things are going well, but still very slow. You ask him about any way to speed things up.\n"+
     "\"Why haven't you adjusted the lambda function yet? Isn't that sum very slow to converge to 1?\"\n"+
-    "Oh yeah!!! There are other infinite sums that converge to 1!\n"+
+    "Oh yeah!!! Other infinite sums that converge to 1!\n"+
     "You change the lambda function.";
     theory.createStoryChapter(3, "A Lambdmark Discovery", story_chapter_4, () => perm2.level == 1);
 
@@ -294,9 +294,9 @@ var init = () => {
     theory.createStoryChapter(7, "EZ Tau Gains Bois!!", story_chapter_8, () => currency.value >= BigNumber.TEN.pow(1150));
 
     let story_chapter_9 = "You and the Professor are at a conference where you are giving a speech on the equation. "+
-    "Everyone is astonished that you showed it was true through brute force.\n"+
-    "You wonder how much bigger ρ can get now that you have pushed it so far.\n"+
-    "Who knows? But we know for sure that it's really close to the integral.\n"+
+    "Everyone is impressed by how far you got with brute force.\n"+
+    "Some think you won't be able to get much farther. \n"+
+    "Yet, you keep pushing.\n"+
     "(Thank you all for playing this theory so far. I had a blast making it and I'm so grateful to Gen and XLII for helping me! There is still more τ to gain! Grind on!!\n"+
     "-Snaeky)";
     theory.createStoryChapter(8, "Closure", story_chapter_9, () => currency.value >= BigNumber.TEN.pow(1250));
@@ -350,9 +350,10 @@ var setInternalState = (state) => {
     if (values.length > 0) t_cumulative = parseBigNumber(values[0]);
     if (values.length > 1) lambda_man = parseBigNumber(values[1]);
     if (values.length > 2) lambda_exp = parseBigNumber(values[2]);
-    if (values.length > 3) lambda_exp = parseBigNumber(values[3]);
+    if (values.length > 3) lambda_base = parseBigNumber(values[3]);
     if (values.length > 4) q = parseBigNumber(values[4]);
     if (values.length > 5) r = parseBigNumber(values[5]);
+    update_divisor = true;
 }
 
 
