@@ -246,7 +246,7 @@ var init = () => {
     let story_chapter_1 = "While studying some techniques in integration, you think about what it would mean to have a partial derivative or integral...\n"+
     "You remember your friend, a Professor that did some work with Differential and Integral Calculus, and ask them what they thought.\n"+
     "They said, \"oh, I think I saw something about a  'Riemann-Liouville Fractional Derivatives' in a textbook a long time ago.\"\n"+
-    "You don't know if it really works, but you want to test it somehow. The equation you make is as follows.";
+    "You don't know if it really works, but you want to test it somehow.\nThe equation you make is as follows.";
     theory.createStoryChapter(0, "An Idea", story_chapter_1, () => currency.value >= 1);
 
     let story_chapter_2 = "Wow, you didn't expect it to work this well!\n"+
@@ -261,7 +261,7 @@ var init = () => {
     theory.createStoryChapter(2, "Converging to the Truth", story_chapter_3, () => perm1.level == 1);
 
     let story_chapter_4 = "The Professor comes to you and asks how things are going.\n"+
-    "You inform them that things are going well, but still very slow. You ask him about any way to speed things up.\n"+
+    "You inform them that things are going well, but still very slow.\nYou ask him about any way to speed things up.\n"+
     "\"Why haven't you adjusted the lambda function yet? Isn't that sum very slow to converge to 1?\"\n"+
     "Oh yeah!!! Other infinite sums that converge to 1!\n"+
     "You change the lambda function.";
@@ -270,8 +270,8 @@ var init = () => {
     let story_chapter_5 = "Changing the equation again seems to have helped a lot.\n"+
     "You are satisfied with your work and think that you have done your due diligence with showing this conjecture to be true...\n"+
     "The Professor comes up to you and scoffs.\n"+
-    "\"Do you really think that you have proven anything yet? You'll need bigger numbers than that to really show that it's true. You remember what it took for me to prove my equation?\"\n"+
-    "You smile at them and nod... and continue to push. Maybe you can add more stuff to make it go faster...";
+    "\"Do you really think that you have proven anything yet? You'll need bigger numbers than that to really show that it's true.\nYou remember what it took for me to prove my equation?\"\n"+
+    "You smile at them and nod... and continue to push.\nMaybe you can add more stuff to make it go faster...";
     theory.createStoryChapter(4, "Insight", story_chapter_5, () => currency.value >= BigNumber.TEN.pow(500));
 
     let story_chapter_6 = "You're losing faith in what you have so far...\n"+
@@ -283,19 +283,19 @@ var init = () => {
     "Every other f(x) you have used has run out of steam and is slowing to a crawl.\n"+
     "What is a really good equation that gets very big, very fast?...\n"+
     "e^x!!!\n"+
-    "Of course, it was staring you in the face the whole time. The professor was right earlier on! Why not use his own equation!";
+    "Of course, it was staring you in the face the whole time.\nThe professor was right earlier on! Why not use his own equation!";
     theory.createStoryChapter(6, "Full Throttle", story_chapter_7, () =>  perm1.level == 3);
 
     let story_chapter_8 = "Well, you feel as though there aren't any more changes to make.\n"+
     "The Professor comes by once more.\n"+
-    "\"Ah, that should do it. I see you used my own equation to push things along. What do you think it will be now?\"\n"+
+    "\"Ah, that should do it.\nI see you used my own equation to push things along.\nWhat do you think it will be now?\"\n"+
     "You respond with a smile on your face.\n"+
-    "I think we will just have to wait and see";
+    "I think we will just have to wait and see.";
     theory.createStoryChapter(7, "EZ Tau Gains Bois!!", story_chapter_8, () => currency.value >= BigNumber.TEN.pow(1150));
 
-    let story_chapter_9 = "You and the Professor are at a conference where you are giving a speech on the equation. "+
+    let story_chapter_9 = "You and the Professor are at a conference where you are giving a speech on the equation.\n"+
     "Everyone is impressed by how far you got with brute force.\n"+
-    "Some think you won't be able to get much farther. \n"+
+    "Some think you won't be able to get much farther.\n"+
     "Yet, you keep pushing.\n"+
     "(Thank you all for playing this theory so far. I had a blast making it and I'm so grateful to Gen and XLII for helping me! There is still more τ to gain! Grind on!!\n"+
     "-Snaeky)";
