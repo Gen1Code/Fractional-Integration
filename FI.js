@@ -46,27 +46,6 @@ var init = () => {
 
     ///////////////////
     // Regular Upgrades
-
-    //
-    {
-        let getDesc = (level) => "\\times \\rho \\text{ by 10}";
-        let getInfo = (level) => "$\\text{Gives e1 } \\rho$";
-        $2 = theory.createUpgrade(7, currency, new FreeCost());
-        $2.getDescription = (amount) => Utils.getMath(getDesc($2.level));
-        $2.getInfo = (amount) => getInfo($2.level + amount);
-        $2.bought = (_) => currency.value *= 10;
-    }
-
-    //
-    {
-        let getDesc = (level) => "\\times \\rho \\text{ by 1e10}";
-        let getInfo = (level) => "$\\text{Gives e10 } \\rho$";
-        $ = theory.createUpgrade(6, currency, new FreeCost());
-        $.getDescription = (amount) => Utils.getMath(getDesc($.level));
-        $.getInfo = (amount) => getInfo($.level + amount);
-        $.bought = (_) => currency.value *= 1e10;
-    }
-
     
     //t
     {
