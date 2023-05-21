@@ -168,7 +168,7 @@ var init = () => {
         kUnlock = theory.createMilestoneUpgrade(1,1);
         kUnlock.getDescription = (_) => {return Localization.getUpgradeAddTermDesc("k");}
         kUnlock.getInfo = (_) => {return Localization.getUpgradeAddTermInfo("k");}
-        kUnlock.boughtOrRefunded = (_) => {updateAvailability();}
+        kUnlock.boughtOrRefunded = (_) => {updateAvailability();theory.invalidateSecondaryEquation();}
         kUnlock.canBeRefunded = (_) => q1Exp.level == 0 && UnlTerm.level == 0 && fxUpg.level == 0 && baseUpg.level == 0;
 
     }
@@ -464,7 +464,7 @@ var getSecondaryEquation = () => {
     }else{
         result += "\\sum_{i=1}^{K}\\frac{"+(lambda_base-1).toString(0)+"}{"+lambda_base.toString(0)+"^{i}}";
     }
-    result += "\\\\\\\\&\\quad\\qquad\\qquad\\dot{q}=q_1"
+    result += "\\\\\\\\&\\quad\\qquad\\qquad\\dot{q}=q_1";
     if (q1Exp.level > 0) result += `^{${1+q1Exp.level*0.01}}`;
     result += "q_2\\quad"+theory.latexSymbol + "=\\max\\rho^{0.1}";
     result += ""
