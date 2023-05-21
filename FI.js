@@ -320,6 +320,7 @@ var updateAvailability = () => {
     UnlTerm.isAvailable = kUnlock.level == 1;
     fxUpg.isAvailable = perm1.level > 0;
     baseUpg.isAvailable = perm2.level > 0;
+    perm2.isAvailable = kUnlock.level == 1;
     fxUpg.maxLevel = 0 + perm1.level;
     baseUpg.maxLevel = 0 + perm2.level;
 
