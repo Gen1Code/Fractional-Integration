@@ -457,8 +457,13 @@ var getSecondaryEquation = () => {
     let result = "";
     result += "&f(x) = ";
     result += fx_latex();
-    result += ",\\quad\\lambda = \\sum_{i=1}^{K}\\frac{"+(lambda_base-1).toString(0)+"}{"+lambda_base.toString(0)+"^{i}}\\\\\\\\";
-    result += "&\\quad\\qquad\\qquad\\dot{q}=q_1"
+    result += ",\\quad\\lambda = ";
+    if (kUnlock.level == 0){
+        result += "\\frac{1}{2}";
+    }else{
+        result += "\\sum_{i=1}^{K}\\frac{"+(lambda_base-1).toString(0)+"}{"+lambda_base.toString(0)+"^{i}}";
+    }
+    result += "\\\\\\\\&\\quad\\qquad\\qquad\\dot{q}=q_1"
     if (q1Exp.level > 0) result += `^{${1+q1Exp.level*0.01}}`;
     result += "q_2\\quad"+theory.latexSymbol + "=\\max\\rho^{0.1}";
     result += ""
