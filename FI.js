@@ -160,7 +160,7 @@ var init = () => {
         intUnlock =  theory.createMilestoneUpgrade(0,1);
         intUnlock.getDescription = (_) => {return "$\\text{Unlock Fractional Integral}$";}
         intUnlock.getInfo = (_) => {return "$\\text{Unlock Fractional Integral}$";}
-        intUnlock.boughtOrRefunded = (_) => {updateAvailability();}
+        intUnlock.boughtOrRefunded = (_) => {updateAvailability();theory.invalidatePrimaryEquation();}
         intUnlock.canBeRefunded = (_) => kUnlock.level == 0;
     }
 
