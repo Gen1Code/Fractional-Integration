@@ -432,7 +432,7 @@ var postPublish = () => {
 }
 
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 85;
+    theory.primaryEquationHeight = 87;
     theory.primaryEquationScale = 1.3;
     let result = "\\begin{matrix}";
     result += "\\dot{\\rho}=tr";
