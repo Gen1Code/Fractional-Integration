@@ -39,7 +39,17 @@ var r = BigNumber.ZERO;
 var update_divisor = true;
 
 var q1, q2, t, k, m, n;
-var q1Exp, UnlTerm, fxUpg, baseUpg;
+var intUnlock, kUnlock, q1Exp, UnlTerm, fxUpg, baseUpg;
+
+var popup = ui.createPopup({
+    title: "f(x) Milestone",
+    content: ui.createStackLayout({
+        children: [                       
+            ui.createLabel({text: "Buying or Refunding a f(x) milestone will reset q",horizontalOptions: LayoutOptions.CENTER}),
+            ui.createButton({text: "Close", onClicked: () => popup.hide()})
+        ]
+    })
+});
 
 var init = () => {
     currency = theory.createCurrency();
@@ -125,8 +135,12 @@ var init = () => {
             new ExponentialCost(BigNumber.TEN.pow(1050),1)));
         perm1.getDescription = (amount) => "$\\text{Unlock f(x) Milestone lv }$"+(Math.min(perm1.level+1,3));
         perm1.getInfo = (amount) => "$\\text{Unlocks the f(x) Milestone lv }$"+(Math.min(perm1.level+1,3));
-        perm1.boughtOrRefunded = (_) => updateAvailability();
+        perm1.boughtOrRefunded = (_) => {
+            updateAvailability();
+            popup.show();
+        }
         perm1.maxLevel = 3;
+    
     }
 
     {
@@ -143,14 +157,31 @@ var init = () => {
     theory.setMilestoneCost(new CustomCost(total => BigNumber.from(getMilCustomCost(total))));
 
     {
-        q1Exp = theory.createMilestoneUpgrade(0, 3);
+        intUnlock =  theory.createMilestoneUpgrade(0,1);
+        intUnlock.getDescription = (_) => {return "$\\text{Unlock Fractional Integral}$";}
+        intUnlock.getInfo = (_) => {return "$\\text{Unlock Fractional Integral}$";}
+        intUnlock.boughtOrRefunded = (_) => {updateAvailability();}
+        intUnlock.canBeRefunded = (_) => kUnlock.level == 0;
+    }
+
+    {
+        kUnlock = theory.createMilestoneUpgrade(1,1);
+        kUnlock.getDescription = (_) => {return Localization.getUpgradeAddTermDesc("k");}
+        kUnlock.getInfo = (_) => {return Localization.getUpgradeAddTermInfo("k");}
+        kUnlock.boughtOrRefunded = (_) => {updateAvailability();}
+        kUnlock.canBeRefunded = (_) => q1Exp.level == 0 && UnlTerm.level == 0 && fxUpg.level == 0 && baseUpg.level == 0;
+
+    }
+
+    {
+        q1Exp = theory.createMilestoneUpgrade(2, 3);
         q1Exp.description = Localization.getUpgradeIncCustomExpDesc("q_1", "0.01");
         q1Exp.info = Localization.getUpgradeIncCustomExpInfo("q_1", "0.01");
         q1Exp.boughtOrRefunded = (_) => {theory.invalidateSecondaryEquation();updateAvailability();};
     }
 
     {
-        UnlTerm = theory.createMilestoneUpgrade(1, 2);
+        UnlTerm = theory.createMilestoneUpgrade(3, 2);
         UnlTerm.getDescription = (_) => {
             if(UnlTerm.level == 0) {
                 return Localization.getUpgradeAddTermDesc("m");
@@ -167,7 +198,7 @@ var init = () => {
     }
 
     {
-        fxUpg = theory.createMilestoneUpgrade(2, 1);
+        fxUpg = theory.createMilestoneUpgrade(4, 1);
         fxUpg.getDescription = (_) => {
             if (fxUpg.level == 0){
                 return "$\\text{Approximate }\\sin(x) \\text{ to 3 terms}$";
@@ -195,7 +226,7 @@ var init = () => {
     }
 
     {
-        baseUpg = theory.createMilestoneUpgrade(3, 1);
+        baseUpg = theory.createMilestoneUpgrade(5, 1);
         baseUpg.getDescription = (_) => {
             if(baseUpg.level == 0){
                 return "$\\text{Improve } \\lambda \\text{ Fraction to } 2/3^{i}$";
@@ -284,6 +315,9 @@ var init = () => {
 }
 
 var updateAvailability = () => {
+    kUnlock.isAvailable = intUnlock.level == 1;
+    q1Exp.isAvailable = kUnlock.level == 1;
+    UnlTerm.isAvailable = kUnlock.level == 1;
     fxUpg.isAvailable = perm1.level > 0;
     baseUpg.isAvailable = perm2.level > 0;
     fxUpg.maxLevel = 0 + perm1.level;
@@ -315,8 +349,13 @@ var tick = (elapsedTime, multiplier) => {
     if (q1.level > 0) t_cumulative += vt * dt;
     q += vq1 * vq2 * dt;
     if (q1.level > 0) r += vapp * dt;
+
+    if(intUnlock.level == 0){
+        rho_dot = vm * vn * t_cumulative * r * (q/BigNumber.PI).pow(BigNumber.ONE/BigNumber.PI);
+    }else{
+        rho_dot = vm * vn * t_cumulative * norm_int(q/(fxUpg.level < 3 ? BigNumber.PI : BigNumber.ONE)).pow(BigNumber.ONE/BigNumber.PI) * r;
+    }
     
-    rho_dot = vm * vn * t_cumulative * norm_int(q/(fxUpg.level < 3 ? BigNumber.PI : BigNumber.ONE)).pow(BigNumber.ONE/BigNumber.PI) * r;
     currency.value += bonus * rho_dot * dt;
 
     theory.invalidateTertiaryEquation();
@@ -351,25 +390,29 @@ var KCosts = [KCost1,KCost2,KCost3];
 
 //Milestone Cost
 var getMilCustomCost = (level) => {
-    //20,70,210,300,425,530,700,800,950,1150
+    //10,20,30,70,210,300,425,530,700,800,950,1150
     switch(level){
         case 0:
-            return 2;
+            return 1;
         case 1:
-            return 7;
+            return 2;
         case 2:
-            return 21;
+            return 3;
         case 3:
-            return 30;
+            return 7;
         case 4:
-            return 42.5;
+            return 21;
         case 5:
-            return 53;
+            return 30;
         case 6:
-            return 70;
+            return 42.5;
         case 7:
-            return 80;
+            return 53;
         case 8:
+            return 70;
+        case 9:
+            return 80;
+        case 10:
             return 95;
     }
     return 115;
@@ -393,13 +436,15 @@ var getPrimaryEquation = () => {
     result += "\\dot{\\rho}=tr";
     if(UnlTerm.level > 0) result +="m";
     if(UnlTerm.level > 1) result +="n";
-    result += "\\sqrt[\\pi]{\\int_{0}^{";
+    result += "\\sqrt[\\pi]{";
+    if(intUnlock.level == 1) result += "\\int_{0}^{";
     if(fxUpg.level<3){
         result += "q/\\pi"
     }else{
         result += "q";
     }
-    result += "}f(x)dx}\\\\\\\\";
+    if(intUnlock.level == 1) result += "}f(x)dx";
+    result += "}\\\\\\\\";
     result += "\\dot{r}=(\\int_{0}^{\\pi}f(x)dx - _{\\lambda}\\int_{0}^{\\pi}f(x)dx^{\\lambda})^{-1}";
     result += "\\end{matrix}";
     return result;
