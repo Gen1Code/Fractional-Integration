@@ -323,6 +323,7 @@ var updateAvailability = () => {
     fxUpg.maxLevel = 0 + perm1.level;
     baseUpg.maxLevel = 0 + perm2.level;
 
+    k.isAvailable = kUnlock.level == 1;
     m.isAvailable = UnlTerm.level > 0;
     n.isAvailable = UnlTerm.level > 1;
 }
