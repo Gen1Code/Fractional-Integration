@@ -6,8 +6,8 @@ To see the theory in game enter this link after pressing the '+' icon in the Cus
 The CT is based on [Fractional Integration](https://en.wikipedia.org/wiki/Fractional_calculus#Fractional_integrals), this is a way to calculate the continuous amount of functions between a function and its integral.
 
 Authors: 
-Snaeky (SnaekySnacks#1161) - Idea
-Gen (Gen#3006) - Code
-XLII (XLII#0042) - Balancing
+- Snaeky (SnaekySnacks#1161) - Idea
+- Gen (Gen#3006) - Code
+- XLII (XLII#0042) - Balancing
 
 ![image](https://github.com/Gen1Code/Fractional-Integration/assets/72555054/b98e8698-0ea4-40a3-ab28-5a49cdebb896)
