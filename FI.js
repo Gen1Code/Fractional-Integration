@@ -198,7 +198,7 @@ var init = () => {
     }
 
     {
-        fxUpg = theory.createMilestoneUpgrade(4, 1);
+        fxUpg = theory.createMilestoneUpgrade(4, 3);
         fxUpg.getDescription = (_) => {
             if (fxUpg.level == 0){
                 return "$\\text{Approximate }\\sin(x) \\text{ to 3 terms}$";
@@ -226,7 +226,7 @@ var init = () => {
     }
 
     {
-        baseUpg = theory.createMilestoneUpgrade(5, 1);
+        baseUpg = theory.createMilestoneUpgrade(5, 2);
         baseUpg.getDescription = (_) => {
             if(baseUpg.level == 0){
                 return "$\\text{Improve } \\lambda \\text{ Fraction to } 2/3^{i}$";
