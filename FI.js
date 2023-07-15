@@ -432,8 +432,8 @@ var postPublish = () => {
 }
 
 var getPrimaryEquation = () => {
-    theory.primaryEquationHeight = 87;
-    theory.primaryEquationScale = 1.3;
+    theory.primaryEquationHeight = 86;
+    theory.primaryEquationScale = 1.27;
     let result = "\\begin{matrix}";
     result += "\\dot{\\rho}=tr";
     if(UnlTerm.level > 0) result +="m";
@@ -453,7 +453,7 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    theory.secondaryEquationHeight = 100;   
+    theory.secondaryEquationHeight = 90;   
     theory.secondaryEquationScale = 1.2;
     let result = "\\begin{matrix}";
     result += "&f(x) = ";
@@ -466,7 +466,7 @@ var getSecondaryEquation = () => {
     }
     result += "\\\\\\\\&\\dot{q}=q_1";
     if (q1Exp.level > 0) result += `^{${1+q1Exp.level*0.01}}`;
-    result += "q_2\\quad"+theory.latexSymbol + "=\\max\\rho^{0.1}";
+    result += "q_2,\\quad"+theory.latexSymbol + "=\\max\\rho^{0.1}";
     result += "\\end{matrix}"
     return result;
 }
