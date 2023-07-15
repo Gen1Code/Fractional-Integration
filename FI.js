@@ -453,9 +453,9 @@ var getPrimaryEquation = () => {
 }
 
 var getSecondaryEquation = () => {
-    theory.secondaryEquationHeight = 100;
+    theory.secondaryEquationHeight = 100;   
     theory.secondaryEquationScale = 1.2;
-    let result = "";
+    let result = "\\begin{matrix}";
     result += "&f(x) = ";
     result += fx_latex();
     result += ",\\quad\\lambda = ";
@@ -464,10 +464,10 @@ var getSecondaryEquation = () => {
     }else{
         result += "\\sum_{i=1}^{K}\\frac{"+(lambda_base-1).toString(0)+"}{"+lambda_base.toString(0)+"^{i}}";
     }
-    result += "\\\\\\\\&\\quad\\qquad\\qquad\\dot{q}=q_1";
+    result += "\\\\\\\\&\\dot{q}=q_1";
     if (q1Exp.level > 0) result += `^{${1+q1Exp.level*0.01}}`;
     result += "q_2\\quad"+theory.latexSymbol + "=\\max\\rho^{0.1}";
-    result += ""
+    result += "\\end{matrix}"
     return result;
 }
 
