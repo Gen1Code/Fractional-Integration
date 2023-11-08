@@ -256,60 +256,71 @@ var init = () => {
     let story_chapter_1 = "While studying some techniques in integration, you think about what it would mean to have a partial derivative or integral...\n"+
     "You remember your friend, a Professor that did some work with Differential and Integral Calculus, and ask them what they thought.\n"+
     "They said, \"oh, I think I saw something about a  'Riemann-Liouville Fractional Derivatives' in a textbook a long time ago.\"\n"+
-    "You don't know if it really works, but you want to test it somehow.\nThe equation you make is as follows.";
+    "You don't know if it really works, but you want to test it somehow.\n"+
+    "You want to start somewhere small and test it from the bottom up. The equation you make is as follows.";
     theory.createStoryChapter(0, "An Idea", story_chapter_1, () => currency.value >= 1);
 
-    let story_chapter_2 = "Wow, you didn't expect it to work this well!\n"+
-    "But, you think it can go faster!\n" +
-    "You add a new variable to speed things up.";
-    theory.createStoryChapter(1, "Pushing Forwards", story_chapter_2, () => UnlTerm.level > 0);
+    let story_chapter_2 = "As your ρ growth begins to slow down, you sit down and think. This is just the base and you know that it works well, but you start to wonder about how good this thought experiment can be.\n"+
+    "Maybe applying the same idea for ρ directly will work well.\n"+
+    "You try to add the \"fractional integral\" into ρ equation to see what comes of it...";
+    theory.createStoryChapter(1, "The Implimentation", story_chapter_2, () => intUnlock.level == 1);
 
-    let story_chapter_3 = "The m and n upgrades are doing well, but you are getting impatient.\n"+
+    let story_chapter_3 = "The change helped, but it is still not enough to get anywhere close to proving the theory.\n"+
+    "You take a look a the equation. You knew from the beginning that you needed to adjust lambda in some way to be able to check if this \'Integral\' is really related to actual Integrals.\n"+
+    "It is finally time to make lambda approach 1.";
+    theory.createStoryChapter(2, "The Inevitability", story_chapter_3, () => kUnlock.level == 1);
+
+    let story_chapter_4 = "Wow, you didn't expect it to work this well!\n"+
+    "But, you think it can go faster!\n" +
+    "You add a new variable to speed things up.";   
+    theory.createStoryChapter(3, "Pushing Forwards", story_chapter_4, () => UnlTerm.level > 0);
+
+    let story_chapter_5 = "The m and n upgrades are doing well, but you are getting impatient.\n"+
     "It's taking too long to really show anything concrete.\n"+
     "Sure, ρ is increasing, but it's not enough to really show that this weird looking \"partial\" integral converges to the actual integral...\n"+
     "Maybe changing f(x) will speed things up!";
-    theory.createStoryChapter(2, "Converging to the Truth", story_chapter_3, () => perm1.level == 1);
+    theory.createStoryChapter(4, "Converging to the Truth", story_chapter_5, () => perm1.level == 1);
 
-    let story_chapter_4 = "The Professor comes to you and asks how things are going.\n"+
+    let story_chapter_6 = "The Professor comes to you and asks how things are going.\n"+
     "You inform them that things are going well, but still very slow.\nYou ask him about any way to speed things up.\n"+
     "\"Why haven't you adjusted the lambda function yet?\n Isn't that sum very slow to converge to 1?\"\n"+
     "Oh yeah!!! Other infinite sums that converge to 1!\n"+
     "You change the lambda function.";
-    theory.createStoryChapter(3, "A Lambdmark Discovery", story_chapter_4, () => perm2.level == 1);
+    theory.createStoryChapter(5, "A Lambdmark Discovery", story_chapter_6, () => perm2.level == 1);
 
-    let story_chapter_5 = "Changing the equation again seems to have helped a lot.\n"+
+    let story_chapter_7 = "Changing the equation again seems to have helped a lot.\n"+
     "You are satisfied with your work and think that you have done your due diligence with showing this conjecture to be true...\n"+
     "The Professor comes up to you and scoffs.\n"+
     "\"Do you really think that you have proven anything yet?\n You'll need bigger numbers than that to really show that it's true.\nYou remember what it took for me to prove my equation?\"\n"+
     "You smile at them and nod... and continue to push.\nMaybe you can add more stuff to make it go faster...";
-    theory.createStoryChapter(4, "Insight", story_chapter_5, () => currency.value >= BigNumber.TEN.pow(500));
+    theory.createStoryChapter(6, "Insight", story_chapter_7, () => currency.value >= BigNumber.TEN.pow(500));
 
-    let story_chapter_6 = "You're losing faith in what you have so far...\n"+
+    let story_chapter_8 = "You're losing faith in what you have so far...\n"+
     "You think back to when your colleague visited you the first time.\n"+
     "Will 3/4 work better than 2/3?";
-    theory.createStoryChapter(5, "More of the Same", story_chapter_6, () => perm2.level == 2);
+    theory.createStoryChapter(7, "More of the Same", story_chapter_8, () => perm2.level == 2);
 
-    let story_chapter_7 = "You feel as though f(x) needs something stronger than anything you have given it before.\n"+
+    let story_chapter_9 = "You feel as though f(x) needs something stronger than anything you have given it before.\n"+
     "Every other f(x) you have used has run out of steam and is slowing to a crawl.\n"+
     "What is a really good equation that gets very big, very fast?...\n"+
     "e^x!!!\n"+
     "Of course, it was staring you in the face the whole time.\nThe professor was right earlier on! Why not use his own equation!";
-    theory.createStoryChapter(6, "Full Throttle", story_chapter_7, () =>  perm1.level == 3);
+    theory.createStoryChapter(8, "Full Throttle", story_chapter_9, () =>  perm1.level == 3);
 
-    let story_chapter_8 = "Well, you feel as though there aren't any more changes to make.\n"+
+    let story_chapter_10 = "Well, you feel as though there aren't any more changes to make.\n"+
     "The Professor comes by once more.\n"+
     "\"Ah, that should do it.\nI see you used my own equation to push things along.\nWhat do you think it will be now?\"\n"+
     "You respond with a smile on your face.\n"+
     "I think we will just have to wait and see.";
-    theory.createStoryChapter(7, "EZ Tau Gains Bois!!", story_chapter_8, () => currency.value >= BigNumber.TEN.pow(1150));
+    theory.createStoryChapter(9, "EZ Tau Gains Bois!!", story_chapter_10, () => currency.value >= BigNumber.TEN.pow(1150));
 
-    let story_chapter_9 = "You and the Professor are at a conference where you are giving a speech on the equation.\n"+
+    let story_chapter_11 = "You and the Professor are at a conference where you are giving a speech on the equation.\n"+
     "Everyone is impressed by how far you got with brute force.\n"+
     "Some think you won't be able to get much farther.\n"+
     "Yet, you keep pushing.\n\n"+
     "Thank you all for playing this theory so far.\n I had a blast making it and I'm so grateful to Gen and XLII for helping me!\n There is still more τ to gain! Grind on!!\n"+
     "-Snaeky";
-    theory.createStoryChapter(8, "Closure", story_chapter_9, () => currency.value >= BigNumber.TEN.pow(1250));
+    theory.createStoryChapter(10, "Closure", story_chapter_11, () => currency.value >= BigNumber.TEN.pow(1250));
 
     updateAvailability();
 }
