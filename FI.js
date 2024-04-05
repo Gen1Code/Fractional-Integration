@@ -4,7 +4,7 @@ import { parseBigNumber, BigNumber } from "./api/BigNumber";
 import { theory } from "./api/Theory";
 import { Utils } from "./api/Utils";
 
-var id = "fractional_integration";
+var id = "fractional_integration_unofficial";
 var name = "Fractional Integration";
 var description =
   "The functions between a function and its derivative have many ways of being shown, this is one of them. " +
