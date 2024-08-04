@@ -19,6 +19,7 @@ var tauMultiplier = 4;
 var rho_dot = BigNumber.ZERO;
 var t_cumulative = BigNumber.ZERO;
 var mainEquationPressed = false;
+var adBoost = BigNumber.ONE;
 
 // lambda = 1 - 1/2^k
 // lambda = 1 - `lambda_man`e`lambda_exp`
@@ -407,6 +408,7 @@ var updateAvailability = () => {
 var tick = (elapsedTime, multiplier) => {
   let dt = BigNumber.from(elapsedTime * multiplier);
   let bonus = theory.publicationMultiplier;
+  adBoost = BigNumber.from(multiplier);
   let vq1 = getQ1(q1.level).pow(getQ1Exp(q1Exp.level));
   let vq2 = getQ2(q2.level);
   let vt = getT(t.level);
@@ -435,6 +437,7 @@ var tick = (elapsedTime, multiplier) => {
 
   currency.value += bonus * rho_dot * dt;
 
+  if(mainEquationPressed) theory.invalidatePrimaryEquation();
   theory.invalidateTertiaryEquation();
 };
 
@@ -511,7 +514,7 @@ var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.0;
     result += "_{\\lambda}\\int_{0}^{\\pi}g(x)dx^{\\lambda} = \\frac{1}{\\Gamma(\\lambda)}\\int_0^\\pi{(\\pi-x)^{\\lambda-1}g(x)}dx";
     result += "\\\\\\\\";
-    result += "h=" + getH(gxUpg.level).toString() + ", \\quad\\dot{ \\rho } =" + rho_dot.toString();
+    result += "h=" + getH(gxUpg.level).toString() + ", \\quad\\dot{ \\rho } =" + (rho_dot*theory.publicationMultiplier*adBoost).toString();
   } else {
     theory.primaryEquationScale = 1.27;
     result = "\\begin{matrix}";
