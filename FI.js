@@ -73,7 +73,9 @@ var popup = ui.createPopup({
             text: "Yes",
             onClicked: () => {
               gxMilestoneConfirmed = true;
-              gxUpg.level += gxMilestoneLevelDifference;
+              if(theory.milestonesUnused()>0){
+                gxUpg.level += gxMilestoneLevelDifference;
+              }
               popup.hide();
             },
           }),
