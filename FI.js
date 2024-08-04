@@ -510,6 +510,8 @@ var getPrimaryEquation = () => {
   if (mainEquationPressed) {
     theory.primaryEquationScale = 1.0;
     result += "_{\\lambda}\\int_{0}^{\\pi}g(x)dx^{\\lambda} = \\frac{1}{\\Gamma(\\lambda)}\\int_0^\\pi{(\\pi-x)^{\\lambda-1}g(x)}dx";
+    result += "\\\\\\\\";
+    result += "h=" + getH(gxUpg.level).toString(4) + ",\\quad\\rho=" + rho_dot.toString(4);
   } else {
     theory.primaryEquationScale = 1.27;
     result = "\\begin{matrix}";
@@ -525,7 +527,7 @@ var getPrimaryEquation = () => {
     }
     if (intUnlock.level == 1) result += "}g(x)dx";
     result += "}\\\\\\\\";
-    result += "\\dot{r}=(\\int_{0}^{\\pi}g(x)dx - _{\\lambda}\\int_{0}^{\\pi}g(x)dx^{\\lambda})^{-1}";
+    result += "\\dot{r}=h(\\int_{0}^{\\pi}g(x)dx - _{\\lambda}\\int_{0}^{\\pi}g(x)dx^{\\lambda})^{-1}";
   }
   result += "\\end{matrix}";
   return result;
@@ -625,6 +627,7 @@ var getQ2 = (level) => BigNumber.TWO.pow(level);
 var getK = (level) => BigNumber.from(level);
 var getM = (level) => BigNumber.from(1.5).pow(level);
 var getN = (level) => Utils.getStepwisePowerSum(level, 3, 11, 0);
+var getH = (level) => [0.26103, 0.2939, -1.2849, -0.20017][level]
 
 var getQ1Exp = (level) => BigNumber.from(1 + level * 0.01);
 
