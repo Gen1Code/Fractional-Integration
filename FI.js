@@ -511,7 +511,7 @@ var getPrimaryEquation = () => {
     theory.primaryEquationScale = 1.0;
     result += "_{\\lambda}\\int_{0}^{\\pi}g(x)dx^{\\lambda} = \\frac{1}{\\Gamma(\\lambda)}\\int_0^\\pi{(\\pi-x)^{\\lambda-1}g(x)}dx";
     result += "\\\\\\\\";
-    result += "h=" + getH(gxUpg.level).toString(4) + ",\\quad\\rho=" + rho_dot.toString(4);
+    result += "h=" + getH(gxUpg.level).toString() + ", \\quad\\dot{ \\rho } =" + rho_dot.toString();
   } else {
     theory.primaryEquationScale = 1.27;
     result = "\\begin{matrix}";
